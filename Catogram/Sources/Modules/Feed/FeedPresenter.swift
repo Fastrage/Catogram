@@ -26,7 +26,8 @@ protocol FeedPresenterProtocol: AnyObject {
     func voteDownForCurrentImage()
     func favCurrentImage()
 }
-class FeedPresenter: FeedPresenterProtocol {
+
+final class FeedPresenter: FeedPresenterProtocol {
     
     weak var view: FeedViewProtocol?
     private var randomImage: ImageResponse? = nil
@@ -51,7 +52,10 @@ class FeedPresenter: FeedPresenterProtocol {
     }
     
     func voteUpForCurrentImage() {
-        self.imageNetworkProtocol.voteForCurrentImage(id: (self.randomImage?.id)!, vote: 1, completion: { result in
+        guard let randomImageId = randomImage?.id else {
+            return
+        }
+        self.imageNetworkProtocol.voteForCurrentImage(id: (randomImageId), vote: 1, completion: { result in
             switch result {
             case .success(let response):
                 print(response.message)
@@ -63,7 +67,10 @@ class FeedPresenter: FeedPresenterProtocol {
     }
     
     func voteDownForCurrentImage() {
-        self.imageNetworkProtocol.voteForCurrentImage(id: (self.randomImage?.id)!, vote: 0, completion: { result in
+        guard let randomImageId = randomImage?.id else {
+            return
+        }
+        self.imageNetworkProtocol.voteForCurrentImage(id: (randomImageId), vote: 0, completion: { result in
             switch result {
             case .success(let response):
                 print(response.message)
@@ -75,7 +82,10 @@ class FeedPresenter: FeedPresenterProtocol {
     }
     
     func favCurrentImage() {
-        self.imageNetworkProtocol.favCurrentImage(id: (self.randomImage?.id)!, completion: { result in
+        guard let randomImageId = randomImage?.id else {
+            return
+        }
+        self.imageNetworkProtocol.favCurrentImage(id: (randomImageId), completion: { result in
             switch result {
             case .success(let response):
                 print(response.message)

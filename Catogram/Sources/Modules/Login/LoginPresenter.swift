@@ -9,28 +9,71 @@
 //
 
 import Foundation
-
 // MARK: View -
-protocol LoginViewProtocol: class {
+protocol LoginViewProtocol: AnyObject {
     func setupLoginView(login: String?)
+    func showAlert(for: String)
+    func performSegueToTabbar()
 }
 
 // MARK: Presenter -
-protocol LoginPresenterProtocol: class {
+protocol LoginPresenterProtocol: AnyObject {
 	var view: LoginViewProtocol? { get set }
     func viewDidLoad()
+    func validate(login: String, password: String) -> Bool
+    func preformLogin(login: String, password: String)
+    func performLogout()
+    func setUserIdForCurrentSession(login: String) 
 }
 
 class LoginPresenter: LoginPresenterProtocol {
-    
+
     weak var view: LoginViewProtocol?
 
     func viewDidLoad() {
-        var login = UserDefaults.standard.stringArray(forKey: "userAuth")
-        guard let logins = login?[0] else {
+        let lastTimeLoginUser = UserDefaults.standard.string(forKey: "lasTimeLoginUser")
+        if lastTimeLoginUser == nil {
             self.view?.setupLoginView(login: nil)
-            return
+        } else {
+            self.view?.setupLoginView(login: lastTimeLoginUser)
         }
-        self.view?.setupLoginView(login: logins)
     }
 }
+extension LoginPresenter {
+    
+    func validate(login: String, password: String) -> Bool {
+        do {
+            try login.validatedText(validationType: ValidatorType.email)
+            try password.validatedText(validationType: ValidatorType.password(login: login))
+            return true
+        } catch (let error) {
+            view?.showAlert(for: (error as! ValidationError).message)
+            return false
+        }
+    }
+    
+    func preformLogin(login: String, password: String) {
+        guard validate(login: login, password: password) else {
+                return
+            }
+            if UserDefaults.standard.array(forKey: "\(login)") == nil {
+                UserDefaults.standard.set([login, password, UUID().uuidString], forKey: "\(login)") }
+            setUserIdForCurrentSession(login: login)
+            UserDefaults.standard.set(login, forKey: "lasTimeLoginUser")
+            view?.performSegueToTabbar()
+    }
+    
+    func performLogout() {
+        UserDefaults.standard.removeObject(forKey: "lasTimeLoginUser")
+        view?.performSegueToTabbar()
+    }
+    
+    func setUserIdForCurrentSession(login: String) {
+        let user = UserDefaults.standard.stringArray(forKey: login)
+        guard let userId = user?[2]  else {
+            return
+        }
+        Constants.currentUserUUID = userId 
+    }
+}
+

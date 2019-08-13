@@ -11,10 +11,12 @@
 import UIKit
 
 final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatble {
-   
+    
+    
+    
     
     private var appCoordinator: AppCoordinator?
-    var presenter: LoginPresenterProtocol
+    private let presenter: LoginPresenterProtocol
     
     private let wallpaper = UIImageView()
     private let loginTextField = UITextField()
@@ -37,18 +39,18 @@ final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatb
         let window = UIWindow(frame: UIScreen.main.bounds)
         self.appCoordinator = AppCoordinator(window: window)
         bindKeyboardNotification()
-        //setupLoginView(login: nil)
         presenter.view = self
         presenter.viewDidLoad()
     }
-
-
+    
+    
     
     
     
 }
 
 extension LoginViewController {
+    
     func setupLoginView(login: String?) {
         
         self.view.addSubview(wallpaper)
@@ -59,13 +61,13 @@ extension LoginViewController {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
-        //self.view.addGestureRecognizer(UIGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+        
         
         self.wallpaper.frame.size = self.view.bounds.size
         self.wallpaper.frame.origin = CGPoint(x: 0, y: -100)
         self.wallpaper.contentMode = .scaleAspectFit
         self.wallpaper.image = UIImage(named: "thecatapi_256xW", in: .main, compatibleWith: nil)
-       
+        
         
         self.loginTextField.placeholder = "E-mail adress"
         self.loginTextField.text = login ?? ""
@@ -81,7 +83,7 @@ extension LoginViewController {
         self.loginTextField.layer.cornerRadius = 10
         self.loginTextField.layer.borderWidth = 2
         self.loginTextField.layer.borderColor = UIColor.black.cgColor
-
+        
         
         self.passwordTextField.placeholder = "Password"
         self.passwordTextField.text = ""
@@ -104,7 +106,7 @@ extension LoginViewController {
         self.logoutButton.layer.cornerRadius = 10
         self.logoutButton.layer.borderWidth = 2
         self.logoutButton.layer.backgroundColor = UIColor.mainColor().cgColor
-        self.logoutButton.addTarget(self, action: #selector(self.performLogout), for: .touchDown)
+        self.logoutButton.addTarget(self, action: #selector(self.logoutButtonTapped), for: .touchDown)
         
         
         
@@ -121,9 +123,7 @@ extension LoginViewController {
         self.loginButton.layer.cornerRadius = 10
         self.loginButton.layer.borderWidth = 2
         self.loginButton.layer.backgroundColor = UIColor.mainColor().cgColor
-        loginButton.addTarget(self, action: #selector(self.preformLogin), for: .touchDown)
-        self.view.layoutSubviews()
-        self.view.setNeedsDisplay()
+        loginButton.addTarget(self, action: #selector(self.loginButtonTapped), for: .touchDown)
     }
     
     
@@ -132,9 +132,7 @@ extension LoginViewController {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) { notification in
             let keyboardHeight: CGFloat = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
             self.view.frame.origin = CGPoint(x: 0, y: -keyboardHeight/2)
-            
         }
-        
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: nil) { notification in
             self.view.frame.origin = CGPoint(x: 0, y: 0)
         }
@@ -144,34 +142,29 @@ extension LoginViewController {
         self.view.endEditing(true)
     }
     
-    @objc func performLogout() {
-        UserDefaults.standard.removeObject(forKey: "userAuth")
-        appCoordinator?.start()
+    @objc func logoutButtonTapped() {
+        presenter.performLogout()
     }
     
-    @objc func preformLogin() {
+    @objc func loginButtonTapped() {
+        let login = self.loginTextField.text
+        let password = self.passwordTextField.text
+        guard let unwrapedLogin = login else {
+            return
+        }
+        guard let unwrapedPassword = password else {
+            return
+        }
         if self.loginButton.titleLabel?.text == "Continue as" {
-           appCoordinator?.setupTabBar()
+            presenter.setUserIdForCurrentSession(login: unwrapedLogin)
+            performSegueToTabbar()
         } else {
-            guard validate() else {
-                return
-            }
-            let login = self.loginTextField.text
-            let password = self.passwordTextField.text
-            UserDefaults.standard.set([login, password, UUID().uuidString], forKey: "userAuth")
-            appCoordinator?.setupTabBar()
+            presenter.preformLogin(login: unwrapedLogin, password: unwrapedPassword)
         }
     }
-    
-    func validate() -> Bool {
-        do {
-            try self.loginTextField.validatedText(validationType: ValidatorType.email)
-            try self.passwordTextField.validatedText(validationType: ValidatorType.password)
-            return true
-        } catch (let error) {
-            showAlert(for: (error as! ValidationError).message)
-            return false
-        }
+
+    func performSegueToTabbar() {
+        appCoordinator?.setupTabBar()
     }
     
     func showAlert(for alert: String) {

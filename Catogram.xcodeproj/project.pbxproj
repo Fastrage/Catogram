@@ -15,6 +15,11 @@
 		0C27F4D422F464B3001D3BB6 /* CatogramUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F4D322F464B3001D3BB6 /* CatogramUITests.swift */; };
 		0C27F50222F49FE9001D3BB6 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F50122F49FE9001D3BB6 /* AppCoordinator.swift */; };
 		0C27F50D22F4A0B9001D3BB6 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F50C22F4A0B9001D3BB6 /* Localization.swift */; };
+		0CBBAA632300785F00AAC4E2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA622300785F00AAC4E2 /* Constants.swift */; };
+		0CBBAA682301693200AAC4E2 /* FavouritesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */; };
+		0CBBAA692301693200AAC4E2 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */; };
+		0CC556CB2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC556CA2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift */; };
+		0CC556CE2301B04800A2B8B6 /* FavouritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CC556CD2301B04800A2B8B6 /* FavouritesViewModel.swift */; };
 		0CD5425822FB2810000AC68E /* FeedPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD5425522FB2810000AC68E /* FeedPresenter.swift */; };
 		0CD5425922FB2810000AC68E /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD5425622FB2810000AC68E /* FeedViewController.swift */; };
 		0CD5425E22FB2972000AC68E /* LoginPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CD5425B22FB2972000AC68E /* LoginPresenter.swift */; };
@@ -60,6 +65,11 @@
 		0C27F4D522F464B3001D3BB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C27F50122F49FE9001D3BB6 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		0C27F50C22F4A0B9001D3BB6 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		0CBBAA622300785F00AAC4E2 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesPresenter.swift; sourceTree = "<group>"; };
+		0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
+		0CC556CA2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesCollectionViewCell.swift; sourceTree = "<group>"; };
+		0CC556CD2301B04800A2B8B6 /* FavouritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewModel.swift; sourceTree = "<group>"; };
 		0CD5425522FB2810000AC68E /* FeedPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPresenter.swift; sourceTree = "<group>"; };
 		0CD5425622FB2810000AC68E /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
 		0CD5425B22FB2972000AC68E /* LoginPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPresenter.swift; sourceTree = "<group>"; };
@@ -150,6 +160,7 @@
 		0C27F50322F4A034001D3BB6 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0CBBAA64230168F500AAC4E2 /* Favorites */,
 				0C27F50422F4A03E001D3BB6 /* Feed */,
 				7A45164BA3F4D2B56EBB0004 /* Login */,
 			);
@@ -169,10 +180,38 @@
 			isa = PBXGroup;
 			children = (
 				0C27F50C22F4A0B9001D3BB6 /* Localization.swift */,
+				0CBBAA622300785F00AAC4E2 /* Constants.swift */,
 				0CD5426322FC7D80000AC68E /* Validator.swift */,
 				0CD5426122FBFF22000AC68E /* UIColor.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		0CBBAA64230168F500AAC4E2 /* Favorites */ = {
+			isa = PBXGroup;
+			children = (
+				0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */,
+				0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */,
+				0CC556C72301AF2800A2B8B6 /* VIews */,
+				0CC556CC2301B01F00A2B8B6 /* ViewModels */,
+			);
+			path = Favorites;
+			sourceTree = "<group>";
+		};
+		0CC556C72301AF2800A2B8B6 /* VIews */ = {
+			isa = PBXGroup;
+			children = (
+				0CC556CA2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift */,
+			);
+			path = VIews;
+			sourceTree = "<group>";
+		};
+		0CC556CC2301B01F00A2B8B6 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0CC556CD2301B04800A2B8B6 /* FavouritesViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		0CD5426522FC7DBE000AC68E /* Extensions */ = {
@@ -355,14 +394,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CC556CE2301B04800A2B8B6 /* FavouritesViewModel.swift in Sources */,
 				0CD5425F22FB2972000AC68E /* LoginViewController.swift in Sources */,
+				0CBBAA682301693200AAC4E2 /* FavouritesPresenter.swift in Sources */,
+				0CC556CB2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift in Sources */,
 				0CD5427222FD8508000AC68E /* ImageDownloader.swift in Sources */,
 				0CD5425E22FB2972000AC68E /* LoginPresenter.swift in Sources */,
 				0CD5426C22FD62A8000AC68E /* URLFactory.swift in Sources */,
 				0CD5426422FC7D80000AC68E /* Validator.swift in Sources */,
 				0CD5426E22FD6E4C000AC68E /* NetworkService+Image.swift in Sources */,
 				0C27F50222F49FE9001D3BB6 /* AppCoordinator.swift in Sources */,
+				0CBBAA632300785F00AAC4E2 /* Constants.swift in Sources */,
 				0CD5426722FC7DEF000AC68E /* UITextField+Validator.swift in Sources */,
+				0CBBAA692301693200AAC4E2 /* FavouritesViewController.swift in Sources */,
 				0C27F50D22F4A0B9001D3BB6 /* Localization.swift in Sources */,
 				0CD5426222FBFF22000AC68E /* UIColor.swift in Sources */,
 				0C27F4B922F464AF001D3BB6 /* Catogram.xcdatamodeld in Sources */,

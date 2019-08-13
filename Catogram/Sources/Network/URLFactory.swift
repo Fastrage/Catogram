@@ -12,17 +12,13 @@ class URLFactory {
     private let xApiKey = "829c8b93-671a-4663-8afd-78b5bdf28472"
     private let baseUrl: String = "https://api.thecatapi.com/v1"
     
-    //var randomImage: URLRequest
-    //var voteUpUrl: URLRequest
-    //var voteDownUrl: URLRequest
-    
     init() {
         
     }
     
     func randomImageUrl() -> URLRequest {
-        let methodURl = "/images/search"
-        var request = URLRequest(url: URL(string: baseUrl+methodURl)!)
+        let methodUrl = "/images/search"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
         let headers = [
             "x-api-key": xApiKey
         ]
@@ -31,20 +27,20 @@ class URLFactory {
         return request
     }
     
-    func voteUpUrl(imageId: String, vote: Int) -> URLRequest {
-        let methodURl = "/votes"
-        var request = URLRequest(url: URL(string: baseUrl+methodURl)!)
+    func voteForCurrentImage(imageId: String, vote: Int) -> URLRequest {
+        let methodUrl = "/votes"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
         let headers = [
             "content-type": "application/json",
             "x-api-key": xApiKey
         ]
         let parameters = [
             "image_id": imageId,
-            "sub_id": "my-user-1234",
+            "sub_id": Constants.currentUserUUID,
             "value": vote
             ] as [String : Any]
-       
-            let postData = try? JSONSerialization.data(withJSONObject: parameters, options: [])
+        
+        let postData = try? JSONSerialization.data(withJSONObject: parameters, options: [])
         
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
@@ -53,20 +49,39 @@ class URLFactory {
     }
     
     func favCurrentImage(imageId:String) -> URLRequest {
-        let methodURl = "/votes"
-        var request = URLRequest(url: URL(string: baseUrl+methodURl)!)
+        let methodUrl = "/favourites"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
         let headers = [
             "content-type": "application/json",
             "x-api-key": xApiKey
         ]
         let parameters = [
-            "image_id": imageId
+            "image_id": imageId,
+            "sub_id": Constants.currentUserUUID
             ] as [String : Any]
         let postData = try? JSONSerialization.data(withJSONObject: parameters, options: [])
         
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
         request.httpBody = postData
+        return request
+    }
+    
+    func favouritesImagesForUser() -> URLRequest {
+        let methodUrl = "/favourites"
+        let queryItem = "?sub_id=\(Constants.currentUserUUID)"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl+queryItem)!)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        let parameters = [
+            "sub_id": Constants.currentUserUUID
+            ] as [String : Any]
+        let postData = try? JSONSerialization.data(withJSONObject: parameters, options: [])
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        request.httpBody = postData
+        print(request.description)
         return request
     }
 }

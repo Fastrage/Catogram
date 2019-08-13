@@ -22,7 +22,7 @@ protocol ValidatorConvertible {
 
 enum ValidatorType {
     case email
-    case password
+    case password(login: String?)
     case requiredField(field: String)
 }
 
@@ -30,7 +30,7 @@ enum VaildatorFactory {
     static func validatorFor(type: ValidatorType) -> ValidatorConvertible {
         switch type {
         case .email: return EmailValidator()
-        case .password: return PasswordValidator()
+        case .password(let login): return PasswordValidator(login)
         case .requiredField(let fieldName): return RequiredFieldValidator(fieldName)
         }
     }
@@ -52,10 +52,22 @@ struct RequiredFieldValidator: ValidatorConvertible {
 }
 
 struct PasswordValidator: ValidatorConvertible {
+    private let login: String?
+    
+    init(_ login: String?) {
+        self.login = login
+    }
+    
+    
     func validated(_ value: String) throws -> String {
-        guard value != "" else {throw ValidationError("Password is Required")}
-        guard value.count >= 6 else { throw ValidationError("Password must have at least 6 characters") }
+        guard let userLogin = login  else {throw ValidationError("E-mail is Required")}
+        let passwordForLogin = UserDefaults.standard.stringArray(forKey: userLogin)
         
+        if passwordForLogin?[1] != nil {
+            guard value == passwordForLogin![1] else {throw ValidationError("Password is incorrect")}
+        }
+        guard value != "" else {throw ValidationError("Password is Required")}
+        guard value.count >= 6 else {throw ValidationError("Password must have at least 6 characters") }  
         do {
             if try NSRegularExpression(pattern: "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$",  options: .caseInsensitive).firstMatch(in: value, options: [], range: NSRange(location: 0, length: value.count)) == nil {
                 throw ValidationError("Password must be more than 6 characters, with at least one character and one numeric character")

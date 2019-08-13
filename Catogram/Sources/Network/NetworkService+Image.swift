@@ -16,7 +16,7 @@ class NetworkService {
     }
     
     func baseRequest<T: Decodable>(url: URLRequest, completion: @escaping (Result<T, Error>) -> Void) {
-
+        
         URLSession.shared.dataTask(with: url) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             
             if let error = error {
@@ -33,9 +33,9 @@ class NetworkService {
             }
             
             let decoder = JSONDecoder()
-
+            
             do {
-                let decodedObject = try! decoder.decode(T.self, from: data)
+                let decodedObject = try decoder.decode(T.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(decodedObject))
                 }
@@ -54,7 +54,9 @@ enum NetworkError: Error {
 }
 
 extension NetworkService: ImageNetworkProtocol {
-    func favCurrentImage(id: String, completion: @escaping (Result<completionResponse, Error>) -> Void) {
+    
+    
+    func favCurrentImage(id: String, completion: @escaping (Result<CompletionResponse, Error>) -> Void) {
         self.baseRequest(url: self.urlFactory.favCurrentImage(imageId: id), completion: completion)
     }
     
@@ -62,8 +64,12 @@ extension NetworkService: ImageNetworkProtocol {
         self.baseRequest(url: self.urlFactory.randomImageUrl(), completion: completion)
     }
     
-    func voteForCurrentImage(id: String, vote: Int, completion: @escaping (Result<completionResponse, Error>) -> Void) {
-        self.baseRequest(url: self.urlFactory.voteUpUrl(imageId: id, vote: vote), completion: completion)
-        
+    func voteForCurrentImage(id: String, vote: Int, completion: @escaping (Result<CompletionResponse, Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.voteForCurrentImage(imageId: id, vote: vote), completion: completion)
+    }
+    
+    func getFavouritesImages(completion: @escaping (Result<[FavouritesResponse], Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.favouritesImagesForUser(), completion: completion)
     }
 }
+

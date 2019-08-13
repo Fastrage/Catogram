@@ -10,52 +10,52 @@
 
 import UIKit
 
-class FeedViewController: UIViewController, FeedViewProtocol {
+final class FeedViewController: UIViewController, FeedViewProtocol {
     
     
-
-	var presenter: FeedPresenterProtocol
+    
+    private let presenter: FeedPresenterProtocol
     private let imageDownloader = ImageDownloader()
     
     private let wallpaperImageView = UIImageView()
+    private let stackView = UIStackView()
     private let voteUpButton = UIButton()
     private let voteDownButton = UIButton()
     private let favItButton = UIButton()
     private let activityIndicator = UIActivityIndicatorView()
     
     
-	init(presenter: FeedPresenterProtocol) {
+    init(presenter: FeedPresenterProtocol) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-	override func viewDidLoad() {
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         setupFeedView()
         presenter.view = self
         presenter.viewDidLoad()
     }
-
+    
 }
 
 extension FeedViewController {
-    func setupFeedView() {
+    private func setupFeedView() {
         self.view.addSubview(wallpaperImageView)
-        self.view.addSubview(voteUpButton)
-        self.view.addSubview(voteDownButton)
-        self.view.addSubview(favItButton)
+        self.view.addSubview(stackView)
+        self.stackView.addSubview(voteUpButton)
+        self.stackView.addSubview(voteDownButton)
+        self.stackView.addSubview(favItButton)
         self.view.addSubview(activityIndicator)
-        
-        print(self.view.bounds)
-        print(self.view.frame)
         
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(sender:)))
+        
         
         self.wallpaperImageView.addGestureRecognizer(tapGestureRecognizer)
         self.wallpaperImageView.isUserInteractionEnabled = true
@@ -63,35 +63,57 @@ extension FeedViewController {
         self.wallpaperImageView.frame.size.height = self.view.bounds.size.height - 223
         self.wallpaperImageView.contentMode = .scaleAspectFit
         
+        
         self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX, y: self.wallpaperImageView.bounds.midY)
         self.activityIndicator.hidesWhenStopped = true
-        self.activityIndicator.color = .red
+        self.activityIndicator.color = .gray
         self.activityIndicator.startAnimating()
         
-        self.voteUpButton.frame = CGRect(x: 0, y: 0, width: 60, height: self.view.frame.height - 223)
-        self.voteUpButton.layer.backgroundColor = UIColor.green.cgColor
+        
+        self.stackView.frame = CGRect(x: 0, y: self.view.bounds.maxY-283, width: self.view.frame.width, height: 60)
+        self.stackView.backgroundColor = UIColor.white
+        
+        
+        self.voteUpButton.frame = CGRect(x: self.stackView.bounds.origin.x,
+                                         y: self.stackView.bounds.origin.y,
+                                         width: self.stackView.bounds.size.width/3,
+                                         height: 60)
         self.voteUpButton.addTarget(self, action: #selector(voteUpForCurrentImage)
             , for: .touchDown)
-        self.voteUpButton.setTitle("Vote UP", for: .normal)
-        self.voteUpButton.setTitleColor(.black, for: .normal)
+        self.voteUpButton.backgroundColor = .white
+        self.voteUpButton.setImage(UIImage.init(named: "like", in: .main, compatibleWith: nil), for: .normal)
+        self.voteUpButton.imageView?.contentMode = .scaleAspectFit
         
-    
-        self.voteDownButton.frame = CGRect(x: self.view.frame.width - 60, y: 0, width: 60, height: self.view.frame.height - 223)
-        self.voteDownButton.layer.backgroundColor = UIColor.red.cgColor
+        
+        
+        self.voteDownButton.frame = CGRect(x: self.stackView.bounds.origin.x + (self.stackView.bounds.size.width/3)*2,
+                                           y: self.stackView.bounds.origin.y,
+                                           width: self.stackView.bounds.size.width/3,
+                                           height: 60)
         self.voteDownButton.addTarget(self, action: #selector(voteDownForCurrentImage), for: .touchDown)
-        self.voteDownButton.setTitle("Vote Down", for: .normal)
-        self.voteDownButton.setTitleColor(.black, for: .normal)
+        self.voteDownButton.backgroundColor = .white
+        self.voteDownButton.setImage(UIImage.init(named: "dislike",
+                                                  in: .main,
+                                                  compatibleWith: nil), for: .normal)
+        self.voteDownButton.imageView?.contentMode = .scaleAspectFit
         
-
-        self.favItButton.frame = CGRect(x: 0, y: self.view.bounds.maxY-283, width: self.view.frame.width, height: 60)
-        self.favItButton.layer.backgroundColor = UIColor.yellow.cgColor
+        
+        self.favItButton.frame = CGRect(x: self.stackView.bounds.origin.x + self.stackView.bounds.size.width/3,
+                                        y: self.stackView.bounds.origin.y,
+                                        width: self.stackView.bounds.size.width/3,
+                                        height: 60)
         self.favItButton.addTarget(self, action: #selector(favCurrentImage), for: .touchDown)
-        self.favItButton.setTitle("Add to favorites", for: .normal)
-        self.favItButton.setTitleColor(.black, for: .normal)
+        self.favItButton.backgroundColor = .white
+        self.favItButton.setImage(UIImage.init(named: "star",
+                                               in: .main,
+                                               compatibleWith: nil), for: .normal)
+        self.favItButton.imageView?.contentMode = .scaleAspectFit
     }
     
+    
+    
     @objc func voteUpForCurrentImage() {
-       presenter.voteUpForCurrentImage()
+        presenter.voteUpForCurrentImage()
     }
     
     @objc func voteDownForCurrentImage() {
@@ -104,7 +126,7 @@ extension FeedViewController {
     
     func setupViewWithCat(cat: ImageResponse) {
         self.activityIndicator.startAnimating()
-        imageDownloader.getPhoto(url1: cat.url) { result in
+        imageDownloader.getPhoto(url: cat.url) { result in
             switch result {
             case .success(let response):
                 self.wallpaperImageView.image = response
@@ -113,8 +135,8 @@ extension FeedViewController {
                 print(error)
             }
         }
-}
-  @objc func tapHandler(sender: UITapGestureRecognizer) {
+    }
+    @objc func tapHandler(sender: UITapGestureRecognizer) {
         if sender.state == .ended {
             self.wallpaperImageView.frame = UIScreen.main.bounds
             self.wallpaperImageView.backgroundColor = .black
@@ -127,6 +149,15 @@ extension FeedViewController {
             self.voteUpButton.isHidden = true
             self.voteDownButton.isHidden = true
             self.favItButton.isHidden = true
+        }
+    }
+    
+}
+
+extension UIButton {
+    override open var isHighlighted: Bool {
+        didSet {
+            backgroundColor = isHighlighted ? .lightGray : .white
         }
     }
 }

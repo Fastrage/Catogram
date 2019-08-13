@@ -25,9 +25,7 @@ class AppCoordinator: Coordinatble {
         
         //MARK: to skip login windows
             setupLogin()
-        //setupTabBarController()
-        
-        
+       // setupTabBarController()
     }
     
     func setupTabBar() {
@@ -46,12 +44,12 @@ private extension AppCoordinator {
     
     func setupTabBarController() {
         self.setupFeed()
-        self.setupPrize()
+        self.setupBreeds()
+        self.setupFavourites()
         let navigationControllers = NavControllerType.allCases.compactMap {
             self.navigationControllers[$0]
         }
         self.tabBarController.setViewControllers(navigationControllers, animated: true)
-        
         self.window.rootViewController = self.tabBarController
         self.window.makeKeyAndVisible()
     }
@@ -67,7 +65,7 @@ private extension AppCoordinator {
         viewController.navigationItem.title = NavControllerType.feed.title
     }
     
-    func setupPrize() {
+    func setupBreeds() {
         guard let navController = self.navigationControllers[.breeds] else {
             fatalError("can't find navController")
         }
@@ -76,6 +74,18 @@ private extension AppCoordinator {
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.breeds.title
     }
+    
+    func setupFavourites() {
+        guard let navController = self.navigationControllers[.favourites] else {
+            fatalError("can't find navController")
+        }
+        let presenter = FavouritesPresenter()
+        let viewController = FavouritesViewController(presenter: presenter)
+        viewController.view.backgroundColor = .white
+        navController.setViewControllers([viewController], animated: false)
+        viewController.navigationItem.title = NavControllerType.favourites.title
+    }
+    
     
     func setupAppearance() {
         UINavigationBar.appearance().barTintColor = .white
@@ -124,13 +134,13 @@ fileprivate enum NavControllerType: Int, CaseIterable {
     var image: UIImage? {
         switch self {
         case .feed:
-            return UIImage(named: "feed")
+            return UIImage(named: "house")
         case .breeds:
-            return UIImage(named: "breeds")
+            return UIImage(named: "book")
         case .search:
             return UIImage(named: "search")
         case .favourites:
-            return UIImage(named: "favourites")
+            return UIImage(named: "star")
         case .upload:
             return UIImage(named: "upload")
         }
