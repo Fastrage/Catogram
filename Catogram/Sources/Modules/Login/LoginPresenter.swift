@@ -14,6 +14,7 @@ protocol LoginViewProtocol: AnyObject {
     func setupLoginView(login: String?)
     func showAlert(for: String)
     func performSegueToTabbar()
+    func performSegueToAppCoordinator()
 }
 
 // MARK: Presenter -
@@ -39,6 +40,7 @@ class LoginPresenter: LoginPresenterProtocol {
         }
     }
 }
+
 extension LoginPresenter {
     
     func validate(login: String, password: String) -> Bool {
@@ -65,7 +67,8 @@ extension LoginPresenter {
     
     func performLogout() {
         UserDefaults.standard.removeObject(forKey: "lasTimeLoginUser")
-        view?.performSegueToTabbar()
+        self.view?.performSegueToAppCoordinator()
+       
     }
     
     func setUserIdForCurrentSession(login: String) {

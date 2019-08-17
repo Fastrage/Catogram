@@ -13,6 +13,7 @@ import Foundation
 // MARK: View -
 protocol FavouritesViewProtocol: AnyObject {
     func set(viewModels: [FavouritesViewModel])
+    func setupfavouritesCollectionView()
 }
 
 // MARK: Presenter -
@@ -43,11 +44,7 @@ final class FavouritesPresenter: FavouritesPresenterProtocol {
         }
     }
     
-    private func didLoad(_ images: [FavouritesResponse]) {
-        self.favouritesImages = images
-        let viewModels: [FavouritesViewModel] = self.makeViewModels(self.favouritesImages)
-        self.view?.set(viewModels: viewModels)
-    }
+    
 }
 private extension FavouritesPresenter {
     func makeViewModels(_ images: [FavouritesResponse]) -> [FavouritesViewModel] {
@@ -58,6 +55,12 @@ private extension FavouritesPresenter {
                                 sub_id: image.sub_id ?? "",
                                 imageUrl: image.image.url ?? "")
         }
+    }
+    func didLoad(_ images: [FavouritesResponse]) {
+        self.favouritesImages = images
+        let viewModels: [FavouritesViewModel] = self.makeViewModels(self.favouritesImages)
+        self.view?.set(viewModels: viewModels)
+        self.view?.setupfavouritesCollectionView()
     }
 }
 

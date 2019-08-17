@@ -69,8 +69,9 @@ private extension AppCoordinator {
         guard let navController = self.navigationControllers[.breeds] else {
             fatalError("can't find navController")
         }
-        let viewController = UIViewController()
-        viewController.view.backgroundColor = .brown
+        let presenter = BreedsPresenter()
+        let viewController = BreedsViewController(presenter: presenter)
+        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.breeds.title
     }

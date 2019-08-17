@@ -33,18 +33,21 @@ final class FeedPresenter: FeedPresenterProtocol {
     private var randomImage: ImageResponse? = nil
     private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
     
-  
+    
     
     func viewDidLoad() {
         getRandomImage()
     }
-    
+}
+
+
+extension FeedPresenter {
     func getRandomImage() {
         self.imageNetworkProtocol.getRandomImage { result in
             switch result {
             case .success(let response):
-               self.randomImage = response[0]
-               self.view?.setupViewWithCat(cat: self.randomImage!)
+                self.randomImage = response[0]
+                self.view?.setupViewWithCat(cat: self.randomImage!)
             case .failure(let error):
                 print(error)
             }
@@ -94,8 +97,5 @@ final class FeedPresenter: FeedPresenterProtocol {
             }
         })
     }
-    
-    
-    
 }
 

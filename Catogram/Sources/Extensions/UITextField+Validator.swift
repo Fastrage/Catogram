@@ -12,6 +12,13 @@ extension String {
     func validatedText(validationType: ValidatorType) throws -> String {
         let validator = VaildatorFactory.validatorFor(type: validationType)
         return try validator.validated(self)
-        //return try validator.validated(self.text!)
+    }
+    
+    
+}
+
+class PickerViewTextField: UITextField {
+    override func caretRect(for position: UITextPosition) -> CGRect {
+    return CGRect.zero
     }
 }

@@ -37,9 +37,13 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupFeedView()
+        
         presenter.view = self
         presenter.viewDidLoad()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        setupFeedView()
     }
     
 }
@@ -60,7 +64,7 @@ extension FeedViewController {
         self.wallpaperImageView.addGestureRecognizer(tapGestureRecognizer)
         self.wallpaperImageView.isUserInteractionEnabled = true
         self.wallpaperImageView.frame.size = self.view.bounds.size
-        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height - 223
+        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom
         self.wallpaperImageView.contentMode = .scaleAspectFit
         
         
@@ -70,7 +74,7 @@ extension FeedViewController {
         self.activityIndicator.startAnimating()
         
         
-        self.stackView.frame = CGRect(x: 0, y: self.view.bounds.maxY-283, width: self.view.frame.width, height: 60)
+        self.stackView.frame = CGRect(x: 0, y: self.view.bounds.maxY-60-self.view.safeAreaInsets.bottom, width: self.view.bounds.width, height: 60)
         self.stackView.backgroundColor = UIColor.white
         
         

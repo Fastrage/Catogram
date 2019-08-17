@@ -15,6 +15,11 @@
 		0C27F4D422F464B3001D3BB6 /* CatogramUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F4D322F464B3001D3BB6 /* CatogramUITests.swift */; };
 		0C27F50222F49FE9001D3BB6 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F50122F49FE9001D3BB6 /* AppCoordinator.swift */; };
 		0C27F50D22F4A0B9001D3BB6 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F50C22F4A0B9001D3BB6 /* Localization.swift */; };
+		0C3F5BA22303F7570004B2EC /* BreedsPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3F5B9F2303F7570004B2EC /* BreedsPresenter.swift */; };
+		0C3F5BA32303F7570004B2EC /* BreedsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3F5BA02303F7570004B2EC /* BreedsViewController.swift */; };
+		0C3F5BA723044E690004B2EC /* BreedModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3F5BA623044E690004B2EC /* BreedModel.swift */; };
+		0C3F5BAA2307C6200004B2EC /* BreedCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3F5BA92307C6200004B2EC /* BreedCollectionViewCell.swift */; };
+		0C3F5BAC2307D6530004B2EC /* ImageTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3F5BAB2307D6530004B2EC /* ImageTask.swift */; };
 		0CBBAA632300785F00AAC4E2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA622300785F00AAC4E2 /* Constants.swift */; };
 		0CBBAA682301693200AAC4E2 /* FavouritesPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */; };
 		0CBBAA692301693200AAC4E2 /* FavouritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */; };
@@ -65,6 +70,11 @@
 		0C27F4D522F464B3001D3BB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0C27F50122F49FE9001D3BB6 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		0C27F50C22F4A0B9001D3BB6 /* Localization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localization.swift; sourceTree = "<group>"; };
+		0C3F5B9F2303F7570004B2EC /* BreedsPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreedsPresenter.swift; sourceTree = "<group>"; };
+		0C3F5BA02303F7570004B2EC /* BreedsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreedsViewController.swift; sourceTree = "<group>"; };
+		0C3F5BA623044E690004B2EC /* BreedModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreedModel.swift; sourceTree = "<group>"; };
+		0C3F5BA92307C6200004B2EC /* BreedCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreedCollectionViewCell.swift; sourceTree = "<group>"; };
+		0C3F5BAB2307D6530004B2EC /* ImageTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTask.swift; sourceTree = "<group>"; };
 		0CBBAA622300785F00AAC4E2 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesPresenter.swift; sourceTree = "<group>"; };
 		0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewController.swift; sourceTree = "<group>"; };
@@ -160,7 +170,8 @@
 		0C27F50322F4A034001D3BB6 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				0CBBAA64230168F500AAC4E2 /* Favorites */,
+				0CBC4BF72303F6F5004ECF58 /* Breeds */,
+				0CBBAA64230168F500AAC4E2 /* Favourites */,
 				0C27F50422F4A03E001D3BB6 /* Feed */,
 				7A45164BA3F4D2B56EBB0004 /* Login */,
 			);
@@ -182,12 +193,27 @@
 				0C27F50C22F4A0B9001D3BB6 /* Localization.swift */,
 				0CBBAA622300785F00AAC4E2 /* Constants.swift */,
 				0CD5426322FC7D80000AC68E /* Validator.swift */,
-				0CD5426122FBFF22000AC68E /* UIColor.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		0CBBAA64230168F500AAC4E2 /* Favorites */ = {
+		0C3F5BA523044E4F0004B2EC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0C3F5BA623044E690004B2EC /* BreedModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		0C3F5BA82307C5F60004B2EC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0C3F5BA92307C6200004B2EC /* BreedCollectionViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		0CBBAA64230168F500AAC4E2 /* Favourites */ = {
 			isa = PBXGroup;
 			children = (
 				0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */,
@@ -195,7 +221,18 @@
 				0CC556C72301AF2800A2B8B6 /* VIews */,
 				0CC556CC2301B01F00A2B8B6 /* ViewModels */,
 			);
-			path = Favorites;
+			path = Favourites;
+			sourceTree = "<group>";
+		};
+		0CBC4BF72303F6F5004ECF58 /* Breeds */ = {
+			isa = PBXGroup;
+			children = (
+				0C3F5BA523044E4F0004B2EC /* Models */,
+				0C3F5BA82307C5F60004B2EC /* Views */,
+				0C3F5B9F2303F7570004B2EC /* BreedsPresenter.swift */,
+				0C3F5BA02303F7570004B2EC /* BreedsViewController.swift */,
+			);
+			path = Breeds;
 			sourceTree = "<group>";
 		};
 		0CC556C72301AF2800A2B8B6 /* VIews */ = {
@@ -217,6 +254,7 @@
 		0CD5426522FC7DBE000AC68E /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0CD5426122FBFF22000AC68E /* UIColor.swift */,
 				0CD5426622FC7DEF000AC68E /* UITextField+Validator.swift */,
 			);
 			path = Extensions;
@@ -251,6 +289,7 @@
 				0CD5426F22FD7150000AC68E /* NetworkServiceProtocols.swift */,
 				0CD5426D22FD6E4C000AC68E /* NetworkService+Image.swift */,
 				0CD5427122FD8508000AC68E /* ImageDownloader.swift */,
+				0C3F5BAB2307D6530004B2EC /* ImageTask.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -395,6 +434,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0CC556CE2301B04800A2B8B6 /* FavouritesViewModel.swift in Sources */,
+				0C3F5BAA2307C6200004B2EC /* BreedCollectionViewCell.swift in Sources */,
 				0CD5425F22FB2972000AC68E /* LoginViewController.swift in Sources */,
 				0CBBAA682301693200AAC4E2 /* FavouritesPresenter.swift in Sources */,
 				0CC556CB2301AF8900A2B8B6 /* FavouritesCollectionViewCell.swift in Sources */,
@@ -407,11 +447,15 @@
 				0CBBAA632300785F00AAC4E2 /* Constants.swift in Sources */,
 				0CD5426722FC7DEF000AC68E /* UITextField+Validator.swift in Sources */,
 				0CBBAA692301693200AAC4E2 /* FavouritesViewController.swift in Sources */,
+				0C3F5BAC2307D6530004B2EC /* ImageTask.swift in Sources */,
+				0C3F5BA723044E690004B2EC /* BreedModel.swift in Sources */,
+				0C3F5BA32303F7570004B2EC /* BreedsViewController.swift in Sources */,
 				0C27F50D22F4A0B9001D3BB6 /* Localization.swift in Sources */,
 				0CD5426222FBFF22000AC68E /* UIColor.swift in Sources */,
 				0C27F4B922F464AF001D3BB6 /* Catogram.xcdatamodeld in Sources */,
 				0CD5425822FB2810000AC68E /* FeedPresenter.swift in Sources */,
 				0C27F4B122F464AF001D3BB6 /* AppDelegate.swift in Sources */,
+				0C3F5BA22303F7570004B2EC /* BreedsPresenter.swift in Sources */,
 				0CD5427022FD7150000AC68E /* NetworkServiceProtocols.swift in Sources */,
 				0CD5425922FB2810000AC68E /* FeedViewController.swift in Sources */,
 			);

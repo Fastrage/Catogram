@@ -15,6 +15,8 @@ final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatb
     
     
     
+    
+    
     private var appCoordinator: AppCoordinator?
     private let presenter: LoginPresenterProtocol
     
@@ -42,11 +44,6 @@ final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatb
         presenter.view = self
         presenter.viewDidLoad()
     }
-    
-    
-    
-    
-    
 }
 
 extension LoginViewController {
@@ -167,12 +164,17 @@ extension LoginViewController {
         appCoordinator?.setupTabBar()
     }
     
+    func performSegueToAppCoordinator() {
+        appCoordinator?.start()
+    }
+    
     func showAlert(for alert: String) {
         let alertController = UIAlertController(title: nil, message: alert, preferredStyle: .alert)
         let alertAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
         alertController.addAction(alertAction)
         present(alertController, animated: true, completion: nil)
     }
+    
 }
 
 

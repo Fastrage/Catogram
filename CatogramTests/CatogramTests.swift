@@ -17,13 +17,32 @@ class CatogramTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        
+        
     }
 
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
+    func testSomeInternetAction() {
+        let imageDownloader = ImageDownloader()
+        let url = "https://cdn2.thecatapi.com/images/bjb.jpg"
+        var resultImage =  UIImage()
 
+        imageDownloader.getPhoto(url: url) { result in
+            switch result {
+            case .success(let response):
+                resultImage = response!
+            case .failure(let error):
+                print(error)
+            }
+        XCTAssert(resultImage == UIImage(named: "bjb", in: .main, compatibleWith: nil))
+        }
+    }
+    
+    
+    
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {

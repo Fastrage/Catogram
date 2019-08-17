@@ -13,6 +13,8 @@ protocol ImageNetworkProtocol {
     func voteForCurrentImage(id: String, vote: Int, completion: @escaping (Result<CompletionResponse, Error>) -> Void)
     func favCurrentImage(id: String, completion: @escaping (Result<CompletionResponse, Error>) -> Void)
     func getFavouritesImages(completion: @escaping (Result<[FavouritesResponse], Error>) -> Void)
+    func getBreedsList(completion: @escaping (Result<[Breed], Error>) -> Void)
+    func searchForImage(name: String?, category: String?, completion: @escaping (Result<[ImageResponse], Error>) -> Void)
 }
 
 struct ImageResponse: Decodable {
@@ -28,14 +30,8 @@ struct CompletionResponse: Decodable {
 struct FavouritesResponse: Decodable {
     let created_at: String?
     let id: Int?
-    let image: FavoritesImageUrl
+    let image: ImageResponse
     let image_id: String?
     let sub_id: String?
-}
-
-struct FavoritesImageUrl: Decodable {
-    let id: String?
-    let url: String?
-    
 }
 

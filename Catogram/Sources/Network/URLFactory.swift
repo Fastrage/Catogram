@@ -84,5 +84,31 @@ class URLFactory {
         print(request.description)
         return request
     }
+    
+    func gerBreedsList() -> URLRequest {
+        let methodUrl = "/breeds"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+
+        print(request.description)
+        return request
+    }
+    
+    func searchForImage(name: String?, category: String?) -> URLRequest {
+        let methodUrl = "/images/search"
+        let queryItem = "?limit=9&breed_id=\(name ?? "")"
+        var request = URLRequest(url: URL(string: baseUrl+methodUrl+queryItem)!)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        print(request.description)
+        return request
+    }
 }
 
