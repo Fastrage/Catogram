@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Catogram/Sources/Network/ImageTask.swift"
+            timestampString = "588263175.9635381"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "downloadTaskCompletionHandler(url:response:error:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Catogram.ImageTask.(downloadTaskCompletionHandler in _491686007E273D4E73653C8624A44CDD)(url: Swift.Optional&lt;Foundation.URL&gt;, response: Swift.Optional&lt;__C.NSURLResponse&gt;, error: Swift.Optional&lt;Swift.Error&gt;) -&gt; ()"
+                  moduleName = "Catogram"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/olegkrylov/Documents/FocusStart/Catogram/Catogram/Sources/Network/ImageTask.swift"
+                  timestampString = "588260140.107057"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "90"
+                  endingLineNumber = "90"
+                  offsetFromSymbolStart = "2034">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in Catogram.ImageTask.(downloadTaskCompletionHandler in _491686007E273D4E73653C8624A44CDD)(url: Swift.Optional&lt;Foundation.URL&gt;, response: Swift.Optional&lt;__C.NSURLResponse&gt;, error: Swift.Optional&lt;Swift.Error&gt;) -&gt; ()"
+                  moduleName = "Catogram"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/olegkrylov/Documents/FocusStart/Catogram/Catogram/Sources/Network/ImageTask.swift"
+                  timestampString = "588260140.1091191"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "91"
+                  endingLineNumber = "91"
+                  offsetFromSymbolStart = "105">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

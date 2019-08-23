@@ -7,10 +7,12 @@
 //
 
 import Foundation
+
 struct FavouritesViewModel {
-    let created_at: String
+    let createdAt: String
     let id: Int
-    let image_id: String
-    let sub_id: String
+    let imageId: String
+    let subId: String
     let imageUrl: String
 }
+

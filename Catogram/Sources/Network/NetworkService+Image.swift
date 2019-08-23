@@ -7,7 +7,7 @@
 //
 import Foundation
 
-class NetworkService {
+final class NetworkService {
     
     let urlFactory: URLFactory
     
@@ -54,8 +54,6 @@ enum NetworkError: Error {
 }
 
 extension NetworkService: ImageNetworkProtocol {
-    
-    
     func favCurrentImage(id: String, completion: @escaping (Result<CompletionResponse, Error>) -> Void) {
         self.baseRequest(url: self.urlFactory.favCurrentImage(imageId: id), completion: completion)
     }
@@ -78,6 +76,22 @@ extension NetworkService: ImageNetworkProtocol {
     
     func searchForImage(name: String?, category: String?, completion: @escaping (Result<[ImageResponse], Error>) -> Void) {
         self.baseRequest(url: self.urlFactory.searchForImage(name: name, category: category), completion: completion)
+    }
+    
+    func getUploadedImages(completion: @escaping (Result<[UploadedResponse], Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.uploadedImagesByUser(), completion: completion)
+    }
+    
+    func uploadImage(image: Data, completion: @escaping (Result<requestCompletionResponse, Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.uploadImage(image: image), completion: completion)
+    }
+    
+    func deleteFromFavourites(id: String, completion: @escaping (Result<requestCompletionResponse, Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.deleteFromFavourites(imageId: id), completion: completion)
+    }
+    
+    func deleteFromUploaded(id: String, completion: @escaping (Result<requestCompletionResponse?, Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.deleteFromUploaded(imageId: id), completion: completion)
     }
 }
 

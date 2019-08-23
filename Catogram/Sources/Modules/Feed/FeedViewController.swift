@@ -14,15 +14,18 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     
     
     
-    private let presenter: FeedPresenterProtocol
-    private let imageDownloader = ImageDownloader()
     
+    
+    
+    private let presenter: FeedPresenterProtocol
     private let wallpaperImageView = UIImageView()
     private let stackView = UIStackView()
     private let voteUpButton = UIButton()
     private let voteDownButton = UIButton()
     private let favItButton = UIButton()
     private let activityIndicator = UIActivityIndicatorView()
+    private var viewModel: FeedViewModel? = nil
+    private var downloadTasks = [Int: ImageTask]()
     
     
     init(presenter: FeedPresenterProtocol) {
@@ -36,20 +39,54 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
+        setupFeedView()
         presenter.view = self
         presenter.viewDidLoad()
     }
     
-    override func viewDidLayoutSubviews() {
-        setupFeedView()
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.tabBarController?.tabBar.isHidden = false
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        stopCurrentTasks()
+    }
+    override func viewDidLayoutSubviews() {
+        setupFrames()
+    }
+    
     
 }
 
 extension FeedViewController {
-    private func setupFeedView() {
+    func set(viewModel: FeedViewModel) {
+        self.activityIndicator.startAnimating()
+        self.downloadTasks.removeAll()
+        self.viewModel = viewModel
+        self.setupDownloadTask(index: 0)
+        self.downloadTasks[0]?.resume()
+    }
+}
+
+private extension FeedViewController {
+    func setupDownloadTask(index: Int) {
+        let session = URLSession(configuration: URLSessionConfiguration.default)
+        if self.downloadTasks[index] == nil {
+            guard let viewModel = self.viewModel else { return }
+            guard let url = URL(string: viewModel.url) else { return }
+            let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
+            self.downloadTasks[index] = imageTask
+        }
+    }
+    
+    func stopCurrentTasks() {
+        for task in 0...downloadTasks.count {
+            self.downloadTasks[task]?.pause()
+        }
+    }
+    
+    func setupFeedView() {
         self.view.addSubview(wallpaperImageView)
         self.view.addSubview(stackView)
         self.stackView.addSubview(voteUpButton)
@@ -57,43 +94,30 @@ extension FeedViewController {
         self.stackView.addSubview(favItButton)
         self.view.addSubview(activityIndicator)
         
-        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(sender:)))
-        
         
         self.wallpaperImageView.addGestureRecognizer(tapGestureRecognizer)
         self.wallpaperImageView.isUserInteractionEnabled = true
-        self.wallpaperImageView.frame.size = self.view.bounds.size
-        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom
+        
         self.wallpaperImageView.contentMode = .scaleAspectFit
         
         
-        self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX, y: self.wallpaperImageView.bounds.midY)
         self.activityIndicator.hidesWhenStopped = true
         self.activityIndicator.color = .gray
-        self.activityIndicator.startAnimating()
         
         
-        self.stackView.frame = CGRect(x: 0, y: self.view.bounds.maxY-60-self.view.safeAreaInsets.bottom, width: self.view.bounds.width, height: 60)
         self.stackView.backgroundColor = UIColor.white
         
         
-        self.voteUpButton.frame = CGRect(x: self.stackView.bounds.origin.x,
-                                         y: self.stackView.bounds.origin.y,
-                                         width: self.stackView.bounds.size.width/3,
-                                         height: 60)
         self.voteUpButton.addTarget(self, action: #selector(voteUpForCurrentImage)
             , for: .touchDown)
         self.voteUpButton.backgroundColor = .white
-        self.voteUpButton.setImage(UIImage.init(named: "like", in: .main, compatibleWith: nil), for: .normal)
+        self.voteUpButton.setImage(UIImage.init(named: "like",
+                                                in: .main,
+                                                compatibleWith: nil), for: .normal)
         self.voteUpButton.imageView?.contentMode = .scaleAspectFit
         
         
-        
-        self.voteDownButton.frame = CGRect(x: self.stackView.bounds.origin.x + (self.stackView.bounds.size.width/3)*2,
-                                           y: self.stackView.bounds.origin.y,
-                                           width: self.stackView.bounds.size.width/3,
-                                           height: 60)
         self.voteDownButton.addTarget(self, action: #selector(voteDownForCurrentImage), for: .touchDown)
         self.voteDownButton.backgroundColor = .white
         self.voteDownButton.setImage(UIImage.init(named: "dislike",
@@ -102,10 +126,6 @@ extension FeedViewController {
         self.voteDownButton.imageView?.contentMode = .scaleAspectFit
         
         
-        self.favItButton.frame = CGRect(x: self.stackView.bounds.origin.x + self.stackView.bounds.size.width/3,
-                                        y: self.stackView.bounds.origin.y,
-                                        width: self.stackView.bounds.size.width/3,
-                                        height: 60)
         self.favItButton.addTarget(self, action: #selector(favCurrentImage), for: .touchDown)
         self.favItButton.backgroundColor = .white
         self.favItButton.setImage(UIImage.init(named: "star",
@@ -114,7 +134,33 @@ extension FeedViewController {
         self.favItButton.imageView?.contentMode = .scaleAspectFit
     }
     
-    
+    func setupFrames() {
+        self.wallpaperImageView.frame.size = self.view.bounds.size
+        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom
+        
+        self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX,
+                                                      y: self.wallpaperImageView.bounds.midY)
+        
+        self.stackView.frame = CGRect(x: 0,
+                                      y: self.view.bounds.maxY-60-self.view.safeAreaInsets.bottom,
+                                      width: self.view.bounds.width,
+                                      height: 60)
+        
+        self.voteUpButton.frame = CGRect(x: self.stackView.bounds.origin.x,
+                                         y: self.stackView.bounds.origin.y,
+                                         width: self.stackView.bounds.size.width/3,
+                                         height: 60)
+        
+        self.voteDownButton.frame = CGRect(x: self.stackView.bounds.origin.x + (self.stackView.bounds.size.width/3)*2,
+                                           y: self.stackView.bounds.origin.y,
+                                           width: self.stackView.bounds.size.width/3,
+                                           height: 60)
+        
+        self.favItButton.frame = CGRect(x: self.stackView.bounds.origin.x + self.stackView.bounds.size.width/3,
+                                        y: self.stackView.bounds.origin.y,
+                                        width: self.stackView.bounds.size.width/3,
+                                        height: 60)
+    }
     
     @objc func voteUpForCurrentImage() {
         presenter.voteUpForCurrentImage()
@@ -128,40 +174,22 @@ extension FeedViewController {
         presenter.favCurrentImage()
     }
     
-    func setupViewWithCat(cat: ImageResponse) {
-        self.activityIndicator.startAnimating()
-        imageDownloader.getPhoto(url: cat.url) { result in
-            switch result {
-            case .success(let response):
-                self.wallpaperImageView.image = response
-                self.activityIndicator.stopAnimating()
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
     @objc func tapHandler(sender: UITapGestureRecognizer) {
-        if sender.state == .ended {
-            self.wallpaperImageView.frame = UIScreen.main.bounds
-            self.wallpaperImageView.backgroundColor = .black
-            self.wallpaperImageView.contentMode = .scaleAspectFill
-            self.wallpaperImageView.clipsToBounds = true
-            self.wallpaperImageView.isUserInteractionEnabled = true
-            
-            self.navigationController?.isNavigationBarHidden = true
-            self.tabBarController?.tabBar.isHidden = true
-            self.voteUpButton.isHidden = true
-            self.voteDownButton.isHidden = true
-            self.favItButton.isHidden = true
+        if sender.state == .ended && viewModel != nil {
+            let presenter = DetailedPresenter()
+            let detailedViewController = DetailedViewController(presenter: presenter, segueFrom: .feed)
+            guard let id = viewModel?.id else { return }
+            guard let url = viewModel?.url else { return }
+            let detailedView = DetailedViewModel(id: id, url: url, subId: nil)
+            detailedViewController.set(viewModel: detailedView)
+            navigationController?.pushViewController(detailedViewController, animated: true)
         }
     }
-    
 }
 
-extension UIButton {
-    override open var isHighlighted: Bool {
-        didSet {
-            backgroundColor = isHighlighted ? .lightGray : .white
-        }
+extension FeedViewController: ImageTaskDownloadedDelegate {
+    func imageDownloaded(position: Int) {
+        self.wallpaperImageView.image = downloadTasks[position]?.image
+        self.activityIndicator.stopAnimating()
     }
 }

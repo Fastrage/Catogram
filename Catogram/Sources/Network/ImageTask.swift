@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 protocol ImageTaskDownloadedDelegate {
     func imageDownloaded(position: Int)
@@ -14,11 +15,11 @@ protocol ImageTaskDownloadedDelegate {
 
 class ImageTask {
     
-    let position: Int
+    private let position: Int
     let url: URL
-    let session: URLSession
-    let cache = URLCache.shared
-    let delegate: ImageTaskDownloadedDelegate
+    private let session: URLSession
+    private let cache = URLCache.shared
+    private let delegate: ImageTaskDownloadedDelegate
     
     var image: UIImage?
     

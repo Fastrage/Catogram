@@ -11,41 +11,42 @@
 import Foundation
 
 // MARK: View -
-protocol BreedsViewProtocol: class {
-    var breedsList: [Breed] { get set}
-    var catImages: [ImageResponse] { get set }
-    func setupBreedsPhotoCollectionView()
+protocol BreedsViewProtocol: AnyObject {
+    func setBreedList( breeds: [Breed])
+    func set(images: [ImageResponse])
+    func showAlert(for alert: String)
 }
 
 // MARK: Presenter -
-protocol BreedsPresenterProtocol: class {
-	var view: BreedsViewProtocol? { get set }
+protocol BreedsPresenterProtocol: AnyObject {
+    var view: BreedsViewProtocol? { get set }
     func viewDidLoad()
-    func getPhotosForBreed(breed: String)
+    func userSelectBreed(breed: String)
 }
 
 final class BreedsPresenter: BreedsPresenterProtocol {
-   
     
     private var breeds: [Breed]? = nil
     private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
     weak var view: BreedsViewProtocol?
     
-
-    func getPhotosForBreed(breed: String) {
+    func userSelectBreed(breed: String) {
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async{
-        self.imageNetworkProtocol.searchForImage(name: breed, category: nil, completion: { result in
-            switch result {
-            case .success(let response):
-                self.view?.catImages = response
-                self.view?.setupBreedsPhotoCollectionView()
-            case .failure(let error):
-                print(error)
-            }
-        })
+            self.imageNetworkProtocol.searchForImage(name: breed, category: nil, completion: { result in
+                switch result {
+                case .success(let response):
+                    if response.isEmpty {
+                        self.view?.showAlert(for: "Не удалось получить фото для выбранной породы")
+                    } else {
+                        self.view?.set(images: response)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        }
     }
-    }
-
+    
     func viewDidLoad() {
         getBreedsList()
     }
@@ -56,7 +57,7 @@ private extension BreedsPresenter {
         self.imageNetworkProtocol.getBreedsList { result in
             switch result {
             case .success(let response):
-                self.view?.breedsList = response
+                self.view?.setBreedList(breeds: response)
             case .failure(let error):
                 print(error)
             }

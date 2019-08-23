@@ -12,11 +12,6 @@ import UIKit
 
 final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatble {
     
-    
-    
-    
-    
-    
     private var appCoordinator: AppCoordinator?
     private let presenter: LoginPresenterProtocol
     
@@ -25,7 +20,6 @@ final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatb
     private let passwordTextField = UITextField()
     private let loginButton = UIButton()
     private let logoutButton = UIButton()
-    
     
     init(presenter: LoginPresenterProtocol) {
         self.presenter = presenter
@@ -59,12 +53,10 @@ extension LoginViewController {
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
-        
         self.wallpaper.frame.size = self.view.bounds.size
         self.wallpaper.frame.origin = CGPoint(x: 0, y: -100)
         self.wallpaper.contentMode = .scaleAspectFit
         self.wallpaper.image = UIImage(named: "thecatapi_256xW", in: .main, compatibleWith: nil)
-        
         
         self.loginTextField.placeholder = "E-mail adress"
         self.loginTextField.text = login ?? ""
@@ -80,7 +72,6 @@ extension LoginViewController {
         self.loginTextField.layer.cornerRadius = 10
         self.loginTextField.layer.borderWidth = 2
         self.loginTextField.layer.borderColor = UIColor.black.cgColor
-        
         
         self.passwordTextField.placeholder = "Password"
         self.passwordTextField.text = ""
@@ -105,8 +96,6 @@ extension LoginViewController {
         self.logoutButton.layer.backgroundColor = UIColor.mainColor().cgColor
         self.logoutButton.addTarget(self, action: #selector(self.logoutButtonTapped), for: .touchDown)
         
-        
-        
         self.loginButton.frame = CGRect(x: self.passwordTextField.frame.minX,
                                         y: self.passwordTextField.frame.maxY + 16,
                                         width: self.passwordTextField.frame.width,
@@ -122,8 +111,6 @@ extension LoginViewController {
         self.loginButton.layer.backgroundColor = UIColor.mainColor().cgColor
         loginButton.addTarget(self, action: #selector(self.loginButtonTapped), for: .touchDown)
     }
-    
-    
     
     func bindKeyboardNotification() {
         NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) { notification in

@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import UIKit
 
-class URLFactory {
+final class URLFactory {
     private let xApiKey = "829c8b93-671a-4663-8afd-78b5bdf28472"
     private let baseUrl: String = "https://api.thecatapi.com/v1"
     
@@ -18,7 +19,8 @@ class URLFactory {
     
     func randomImageUrl() -> URLRequest {
         let methodUrl = "/images/search"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "x-api-key": xApiKey
         ]
@@ -29,7 +31,8 @@ class URLFactory {
     
     func voteForCurrentImage(imageId: String, vote: Int) -> URLRequest {
         let methodUrl = "/votes"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "content-type": "application/json",
             "x-api-key": xApiKey
@@ -50,7 +53,8 @@ class URLFactory {
     
     func favCurrentImage(imageId:String) -> URLRequest {
         let methodUrl = "/favourites"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "content-type": "application/json",
             "x-api-key": xApiKey
@@ -70,7 +74,8 @@ class URLFactory {
     func favouritesImagesForUser() -> URLRequest {
         let methodUrl = "/favourites"
         let queryItem = "?sub_id=\(Constants.currentUserUUID)"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl+queryItem)!)
+        guard let url = URL(string: baseUrl+methodUrl+queryItem) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "x-api-key": xApiKey
         ]
@@ -81,34 +86,115 @@ class URLFactory {
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
         request.httpBody = postData
-        print(request.description)
         return request
     }
     
     func gerBreedsList() -> URLRequest {
         let methodUrl = "/breeds"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl)!)
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "x-api-key": xApiKey
         ]
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
-
-        print(request.description)
         return request
     }
     
     func searchForImage(name: String?, category: String?) -> URLRequest {
         let methodUrl = "/images/search"
         let queryItem = "?limit=9&breed_id=\(name ?? "")"
-        var request = URLRequest(url: URL(string: baseUrl+methodUrl+queryItem)!)
+        guard let url = URL(string: baseUrl+methodUrl+queryItem) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
         let headers = [
             "x-api-key": xApiKey
         ]
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
-        print(request.description)
         return request
+    }
+    
+    func uploadedImagesByUser() -> URLRequest {
+        let methodUrl = "/images"
+        let queryItem = "?sub_id=\(Constants.currentUserUUID)&limit=100&order=ASC"
+        guard let url = URL(string: baseUrl+methodUrl+queryItem) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        return request
+    }
+    
+    func uploadImage(image: Data) -> URLRequest {
+        let methodUrl = "/images/upload"
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
+        
+        let parameters = [
+            "sub_id": Constants.currentUserUUID
+            ] as [String : String]
+
+        let boundary = "Boundary-\(UUID().uuidString)"
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("\(xApiKey)", forHTTPHeaderField: "x-api-key")
+        request.httpBody = createBody(parameters: parameters,
+                                boundary: boundary,
+                                data: image,
+                                mimeType: "image/jpeg",
+                                filename: "hello.jpeg")
+        return request
+    }
+    
+    func deleteFromFavourites(imageId:String) -> URLRequest {
+        let methodUrl = "/favourites/"
+        guard let url = URL(string: baseUrl+methodUrl+imageId) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "DELETE"
+        request.allHTTPHeaderFields = headers
+        return request
+    }
+    
+    func deleteFromUploaded(imageId:String) -> URLRequest {
+        let methodUrl = "/images/"
+        guard let url = URL(string: baseUrl+methodUrl+imageId) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "DELETE"
+        request.allHTTPHeaderFields = headers
+        return request
+    }
+    
+    func createBody(parameters: [String: String],
+                    boundary: String,
+                    data: Data,
+                    mimeType: String,
+                    filename: String) -> Data {
+        let body = NSMutableData()
+        
+        let boundaryPrefix = "--\(boundary)\r\n"
+        
+        for (key, value) in parameters {
+            body.appendString(boundaryPrefix)
+            body.appendString("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+            body.appendString("\(value)\r\n")
+        }
+        
+        body.appendString(boundaryPrefix)
+        body.appendString("Content-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n")
+        body.appendString("Content-Type: \(mimeType)\r\n\r\n")
+        body.append(data)
+        body.appendString("\r\n")
+        body.appendString("--".appending(boundary.appending("--")))
+        
+        return body as Data
     }
 }
 

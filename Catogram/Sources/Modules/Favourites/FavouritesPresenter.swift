@@ -13,14 +13,12 @@ import Foundation
 // MARK: View -
 protocol FavouritesViewProtocol: AnyObject {
     func set(viewModels: [FavouritesViewModel])
-    func setupfavouritesCollectionView()
 }
 
 // MARK: Presenter -
 protocol FavouritesPresenterProtocol: AnyObject {
     var view: FavouritesViewProtocol? { get set }
     func viewDidLoad()
-    func getFavouritesImages()
 }
 
 final class FavouritesPresenter: FavouritesPresenterProtocol {
@@ -33,6 +31,11 @@ final class FavouritesPresenter: FavouritesPresenterProtocol {
         getFavouritesImages()
     }
     
+    
+    
+    
+}
+private extension FavouritesPresenter {
     func getFavouritesImages() {
         self.imageNetworkProtocol.getFavouritesImages { result in
             switch result {
@@ -43,16 +46,12 @@ final class FavouritesPresenter: FavouritesPresenterProtocol {
             }
         }
     }
-    
-    
-}
-private extension FavouritesPresenter {
     func makeViewModels(_ images: [FavouritesResponse]) -> [FavouritesViewModel] {
         return images.map { image in
-            FavouritesViewModel(created_at: image.created_at ?? "",
+            FavouritesViewModel(createdAt: image.createdAt ?? "",
                                 id: image.id ?? 0,
-                                image_id: image.image_id ?? "",
-                                sub_id: image.sub_id ?? "",
+                                imageId: image.imageId ?? "",
+                                subId: image.subId ?? "",
                                 imageUrl: image.image.url ?? "")
         }
     }
@@ -60,7 +59,6 @@ private extension FavouritesPresenter {
         self.favouritesImages = images
         let viewModels: [FavouritesViewModel] = self.makeViewModels(self.favouritesImages)
         self.view?.set(viewModels: viewModels)
-        self.view?.setupfavouritesCollectionView()
     }
 }
 

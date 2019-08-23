@@ -8,46 +8,53 @@
 
 import UIKit
 
-class BreedCollectionViewCell: UICollectionViewCell {
+final class BreedCollectionViewCell: UICollectionViewCell {
     
     private let activityIndicator = UIActivityIndicatorView()
-    let imageView = UIImageView()
+    let breedImageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
     
-    override func prepareForReuse() {
-        self.imageView.image = nil
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        self.breedImageView.image = nil
+    }
+}
+extension BreedCollectionViewCell {
     
     func set(image: UIImage?) {
-        imageView.image = image
-        if image == nil {
-            activityIndicator.startAnimating()
-        } else {
-            activityIndicator.stopAnimating()
-        }
+        self.breedImageView.image = image
     }
     
-    private func setupView() {
-        self.backgroundColor = .gray
+    func showLoading() {
+        activityIndicator.startAnimating()
+    }
+    
+    func hideLoading() {
+        activityIndicator.stopAnimating()
+    }
+}
+
+private extension BreedCollectionViewCell {
+    func setupView() {
+        self.backgroundColor = UIColor.mainColor()
         self.layer.borderColor = UIColor.black.cgColor
         self.layer.borderWidth = 1
         self.layer.cornerRadius = 4
         self.clipsToBounds = true
         
-        self.addSubview(imageView)
-        imageView.frame = self.bounds
-        imageView.contentMode = .scaleAspectFill
+        self.addSubview(breedImageView)
+        breedImageView.frame = self.bounds
+        breedImageView.contentMode = .scaleAspectFill
         
         self.addSubview(activityIndicator)
-        self.activityIndicator.frame.origin = CGPoint(x: self.imageView.bounds.midX, y: self.imageView.bounds.midY)
+        self.activityIndicator.frame.origin = CGPoint(x: self.breedImageView.bounds.midX, y: self.breedImageView.bounds.midY)
         
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

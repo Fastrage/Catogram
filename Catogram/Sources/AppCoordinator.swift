@@ -10,7 +10,7 @@ protocol Coordinatble {
     
 }
 
-class AppCoordinator: Coordinatble {
+final class AppCoordinator: Coordinatble {
     
     private let window: UIWindow
      lazy var tabBarController = UITabBarController()
@@ -22,10 +22,7 @@ class AppCoordinator: Coordinatble {
     }
     
     func start() {
-        
-        //MARK: to skip login windows
             setupLogin()
-       // setupTabBarController()
     }
     
     func setupTabBar() {
@@ -45,7 +42,9 @@ private extension AppCoordinator {
     func setupTabBarController() {
         self.setupFeed()
         self.setupBreeds()
+        self.setupSearch()
         self.setupFavourites()
+        self.setupUpload()
         let navigationControllers = NavControllerType.allCases.compactMap {
             self.navigationControllers[$0]
         }
@@ -76,6 +75,17 @@ private extension AppCoordinator {
         viewController.navigationItem.title = NavControllerType.breeds.title
     }
     
+    func setupSearch() {
+        guard let navController = self.navigationControllers[.search] else {
+            fatalError("can't find navController")
+        }
+        let presenter = SearchPresenter()
+        let viewController = SearchViewController(presenter: presenter)
+        viewController.view.backgroundColor = .white
+        navController.setViewControllers([viewController], animated: false)
+        viewController.navigationItem.title = NavControllerType.search.title
+    }
+    
     func setupFavourites() {
         guard let navController = self.navigationControllers[.favourites] else {
             fatalError("can't find navController")
@@ -87,13 +97,23 @@ private extension AppCoordinator {
         viewController.navigationItem.title = NavControllerType.favourites.title
     }
     
+    func setupUpload() {
+        guard let navController = self.navigationControllers[.upload] else {
+            fatalError("can't find navController")
+        }
+        let presenter = UploadPresenter()
+        let viewController = UploadViewController(presenter: presenter)
+        viewController.view.backgroundColor = .white
+        navController.setViewControllers([viewController], animated: false)
+        viewController.navigationItem.title = NavControllerType.upload.title
+    }
     
     func setupAppearance() {
         UINavigationBar.appearance().barTintColor = .white
         UINavigationBar.appearance().tintColor = UIColor.mainColor()
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().isTranslucent = false
-        UINavigationBar.appearance().shadowImage = UIImage()
+        //UINavigationBar.appearance().shadowImage = UIImage()
         
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = UIColor.mainColor()

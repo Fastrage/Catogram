@@ -33,7 +33,8 @@ class CatogramTests: XCTestCase {
         imageDownloader.getPhoto(url: url) { result in
             switch result {
             case .success(let response):
-                resultImage = response!
+                guard let response = response else { return }
+                resultImage = response
             case .failure(let error):
                 print(error)
             }

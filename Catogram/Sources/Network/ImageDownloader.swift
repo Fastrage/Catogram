@@ -10,8 +10,8 @@ protocol iImageDownloader {
     func getPhoto(url:String?, completion: @escaping (Result<UIImage?, Error>)  -> Void)
 }
 
-class ImageDownloader: iImageDownloader {
-    let cache = URLCache.shared
+final class ImageDownloader: iImageDownloader {
+    private let cache = URLCache.shared
     func getPhoto(url:String?, completion: @escaping (Result<UIImage?, Error>) -> Void)  {
         DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async{
 

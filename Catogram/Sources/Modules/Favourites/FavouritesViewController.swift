@@ -12,10 +12,10 @@ import UIKit
 
 final class FavouritesViewController: UIViewController, FavouritesViewProtocol {
     
-    var presenter: FavouritesPresenterProtocol
+    private var presenter: FavouritesPresenterProtocol
     private let favouritesCollectionView: UICollectionView
     private var viewModels = [FavouritesViewModel]()
-    private var imageTasks = [Int: ImageTask]()
+    private var downloadTasks = [Int: ImageTask]()
     
     init(presenter: FavouritesPresenterProtocol) {
         self.presenter = presenter
@@ -30,48 +30,59 @@ final class FavouritesViewController: UIViewController, FavouritesViewProtocol {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupCollectionView()
         presenter.view = self
         presenter.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        presenter.getFavouritesImages()
+        presenter.viewDidLoad()
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.tabBarController?.tabBar.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        stopCurrentTasks()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setupCollectionView()
         self.favouritesCollectionView.frame = self.view.bounds
-        self.favouritesCollectionView.backgroundColor = .white
     }
 }
 
 extension FavouritesViewController {
-    func setupfavouritesCollectionView() {
-        self.setupImageTasks(totalImages: self.viewModels.count)
+    func set(viewModels: [FavouritesViewModel]) {
+        self.viewModels = viewModels
         self.favouritesCollectionView.reloadData()
     }
+}
+
+private extension FavouritesViewController {
     
-    private func setupImageTasks(totalImages: Int) {
+    private func setupDownloadTask(index: Int) {
         let session = URLSession(configuration: URLSessionConfiguration.default)
-        
-        for i in 0..<totalImages {
-            let url = URL(string: self.viewModels[i].imageUrl)!
-            let imageTask = ImageTask(position: i, url: url, session: session, delegate: self)
-            imageTasks[i] = imageTask
+        guard let url = URL(string: self.viewModels[index].imageUrl) else { return }
+        if downloadTasks[index] == nil || downloadTasks[index]?.url != url {
+            let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
+            downloadTasks[index] = imageTask
         }
     }
     
     func setupCollectionView() {
+        self.view.backgroundColor = .white
         self.favouritesCollectionView.dataSource = self
         self.favouritesCollectionView.delegate = self
         self.favouritesCollectionView.register(FavouritesCollectionViewCell.self, forCellWithReuseIdentifier: "FavouriteCell")
         self.favouritesCollectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        self.favouritesCollectionView.backgroundColor = .white
         self.view.addSubview(favouritesCollectionView)
     }
     
-    func set(viewModels: [FavouritesViewModel]) {
-        self.viewModels = viewModels
+    func stopCurrentTasks() {
+        for task in 0...downloadTasks.count {
+            self.downloadTasks[task]?.pause()
+        }
     }
 }
 
@@ -83,7 +94,11 @@ extension FavouritesViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavouriteCell", for: indexPath) as! FavouritesCollectionViewCell
-        let image = imageTasks[indexPath.row]?.image
+        guard let image = downloadTasks[indexPath.row]?.image else {
+            cell.showLoading()
+            return cell
+        }
+        cell.hideLoading()
         cell.set(image: image)
         return cell
     }
@@ -93,11 +108,20 @@ extension FavouritesViewController: UICollectionViewDataSource {
 
 extension FavouritesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        imageTasks[indexPath.row]?.resume()
+        setupDownloadTask(index: indexPath.row)
+        downloadTasks[indexPath.row]?.resume()
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        imageTasks[indexPath.row]?.pause()
+        downloadTasks[indexPath.row]?.pause()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let presenter = DetailedPresenter()
+        let detailedViewController = DetailedViewController(presenter: presenter, segueFrom: .favourites)
+        let detailedView = DetailedViewModel(id: String(viewModels[indexPath.row].id), url: viewModels[indexPath.row].imageUrl, subId: viewModels[indexPath.row].subId)
+        detailedViewController.set(viewModel: detailedView)
+        navigationController?.pushViewController(detailedViewController, animated: true)
     }
 }
 

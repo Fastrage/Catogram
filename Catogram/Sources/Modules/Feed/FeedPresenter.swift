@@ -12,8 +12,7 @@ import Foundation
 
 // MARK: View -
 protocol FeedViewProtocol: AnyObject {
-    func setupViewWithCat(cat: ImageResponse)
-    
+    func set(viewModel: FeedViewModel)
 }
 
 // MARK: Presenter -
@@ -46,8 +45,7 @@ extension FeedPresenter {
         self.imageNetworkProtocol.getRandomImage { result in
             switch result {
             case .success(let response):
-                self.randomImage = response[0]
-                self.view?.setupViewWithCat(cat: self.randomImage!)
+                self.didLoad(response)
             case .failure(let error):
                 print(error)
             }
@@ -99,3 +97,16 @@ extension FeedPresenter {
     }
 }
 
+private extension FeedPresenter {
+    func makeViewModels(_ image: ImageResponse) -> FeedViewModel {
+        return FeedViewModel(id: image.id ?? "",
+                             url: image.url ?? "")
+        }
+    
+    func didLoad(_ images: [ImageResponse]) {
+        self.randomImage = images[0]
+        guard let randomImage = self.randomImage else { return }
+        let viewModel: FeedViewModel = self.makeViewModels(randomImage)
+        self.view?.set(viewModel: viewModel)
+    }
+}

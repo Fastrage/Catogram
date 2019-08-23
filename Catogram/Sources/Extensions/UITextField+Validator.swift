@@ -17,7 +17,7 @@ extension String {
     
 }
 
-class PickerViewTextField: UITextField {
+final class PickerViewTextField: UITextField {
     override func caretRect(for position: UITextPosition) -> CGRect {
     return CGRect.zero
     }

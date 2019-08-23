@@ -1,26 +1,20 @@
 //
-//  FavouritesCollectionViewCell.swift
+//  UploadCollectionViewCell.swift
 //  Catogram
 //
-//  Created by Олег Крылов on 12/08/2019.
+//  Created by Олег Крылов on 18/08/2019.
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
 
 import UIKit
 
-final class FavouritesCollectionViewCell: UICollectionViewCell {
-    
+final class UploadCollectionViewCell: UICollectionViewCell {
     
     private let activityIndicator = UIActivityIndicatorView()
-    private let favouritesImageView = UIImageView()
-    
+    private let uploadImageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.contentView.addSubview(favouritesImageView)
-        self.favouritesImageView.contentMode = .scaleAspectFill
-        self.favouritesImageView.frame = self.bounds
-        self.favouritesImageView.clipsToBounds = true
         setupView()
     }
     
@@ -29,12 +23,13 @@ final class FavouritesCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
-        self.favouritesImageView.image = nil
+        self.uploadImageView.image = nil
     }
 }
-extension FavouritesCollectionViewCell {
+
+extension UploadCollectionViewCell {
     func set(image: UIImage?) {
-        favouritesImageView.image = image
+        self.uploadImageView.image = image
     }
     
     func showLoading() {
@@ -46,7 +41,7 @@ extension FavouritesCollectionViewCell {
     }
 }
 
-private extension FavouritesCollectionViewCell {
+private extension UploadCollectionViewCell {
     func setupView() {
         self.backgroundColor = UIColor.mainColor()
         self.layer.borderColor = UIColor.black.cgColor
@@ -54,12 +49,15 @@ private extension FavouritesCollectionViewCell {
         self.layer.cornerRadius = 4
         self.clipsToBounds = true
         
-        self.addSubview(favouritesImageView)
-        self.favouritesImageView.frame = self.bounds
+        self.addSubview(uploadImageView)
+        uploadImageView.frame = self.bounds
+        uploadImageView.contentMode = .scaleAspectFill
         
         self.addSubview(activityIndicator)
-        self.activityIndicator.frame.origin = CGPoint(
-            x: self.favouritesImageView.bounds.midX,
-            y: self.favouritesImageView.bounds.midY)
+        self.activityIndicator.frame.origin = CGPoint(x: self.uploadImageView.bounds.midX, y: self.uploadImageView.bounds.midY)
+        
     }
+    
+    
 }
+
