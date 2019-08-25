@@ -60,10 +60,10 @@ extension FavouritesViewController {
 
 private extension FavouritesViewController {
     
-    private func setupDownloadTask(index: Int) {
+     func setupDownloadTask(index: Int) {
         let session = URLSession(configuration: URLSessionConfiguration.default)
         guard let url = URL(string: self.viewModels[index].imageUrl) else { return }
-        if downloadTasks[index] == nil || downloadTasks[index]?.url != url {
+        if downloadTasks[index] == nil || downloadTasks[index]?.url != url || self.viewModels[index].image == nil {
             let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
             downloadTasks[index] = imageTask
         }
@@ -94,7 +94,7 @@ extension FavouritesViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavouriteCell", for: indexPath) as! FavouritesCollectionViewCell
-        guard let image = downloadTasks[indexPath.row]?.image else {
+        guard let image = viewModels[indexPath.row].image else {
             cell.showLoading()
             return cell
         }
@@ -102,14 +102,15 @@ extension FavouritesViewController: UICollectionViewDataSource {
         cell.set(image: image)
         return cell
     }
-    
-    
 }
 
 extension FavouritesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        setupDownloadTask(index: indexPath.row)
-        downloadTasks[indexPath.row]?.resume()
+        print("willDisplay cell: \(indexPath)")
+        if viewModels[indexPath.row].image == nil {
+            setupDownloadTask(index: indexPath.row)
+            downloadTasks[indexPath.row]?.resume()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -135,7 +136,8 @@ extension FavouritesViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension FavouritesViewController: ImageTaskDownloadedDelegate {
-    func imageDownloaded(position: Int) {
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.viewModels[position].image = image
         self.favouritesCollectionView.reloadItems(at: [IndexPath(row: position, section: 0)])
     }
 }

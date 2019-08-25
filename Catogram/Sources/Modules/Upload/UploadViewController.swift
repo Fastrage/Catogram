@@ -16,6 +16,7 @@ final class UploadViewController: UIViewController, UploadViewProtocol {
     private let uploadCollectionView: UICollectionView
     private var viewModels = [UploadedViewModel]()
     private var downloadTasks = [Int: ImageTask]()
+    private var images = [UIImage?]()
     
     init(presenter: UploadPresenterProtocol) {
         let collectionViewLayout = UICollectionViewFlowLayout()
@@ -158,7 +159,7 @@ extension UploadViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UploadCell", for: indexPath) as! UploadCollectionViewCell
-        guard let image = downloadTasks[indexPath.row]?.image else {
+        guard let image = self.viewModels[indexPath.row].image else {
             cell.showLoading()
             return cell
         }
@@ -187,7 +188,8 @@ extension UploadViewController: UIImagePickerControllerDelegate, UINavigationCon
 }
 
 extension UploadViewController: ImageTaskDownloadedDelegate {
-    func imageDownloaded(position: Int) {
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.viewModels[position].image = image
         self.uploadCollectionView.reloadItems(at: [IndexPath(row: position, section: 0)])
     }
 }

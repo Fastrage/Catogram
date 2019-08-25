@@ -13,7 +13,7 @@ import Foundation
 // MARK: View -
 protocol BreedsViewProtocol: AnyObject {
     func setBreedList( breeds: [Breed])
-    func set(images: [ImageResponse])
+    func set(images: [BreedImagesViewModel])
     func showAlert(for alert: String)
 }
 
@@ -27,6 +27,7 @@ protocol BreedsPresenterProtocol: AnyObject {
 final class BreedsPresenter: BreedsPresenterProtocol {
     
     private var breeds: [Breed]? = nil
+    private var images: [ImageResponse] = []
     private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
     weak var view: BreedsViewProtocol?
     
@@ -38,7 +39,7 @@ final class BreedsPresenter: BreedsPresenterProtocol {
                     if response.isEmpty {
                         self.view?.showAlert(for: "Не удалось получить фото для выбранной породы")
                     } else {
-                        self.view?.set(images: response)
+                        self.didLoad(response)
                     }
                 case .failure(let error):
                     print(error)
@@ -62,5 +63,17 @@ private extension BreedsPresenter {
                 print(error)
             }
         }
+    }
+    func makeViewModels(_ images: [ImageResponse]) -> [BreedImagesViewModel] {
+        return images.map { image in
+            BreedImagesViewModel(id: image.id ?? "",
+                            url: image.url ?? "",
+                            image: nil)
+        }
+    }
+    func didLoad(_ images: [ImageResponse]) {
+        self.images = images
+        let viewModels: [BreedImagesViewModel] = self.makeViewModels(self.images)
+        self.view?.set(images: viewModels)
     }
 }

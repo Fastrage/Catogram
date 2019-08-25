@@ -1,15 +1,14 @@
 //
-//  UploadedViewModel.swift
+//  BreedImagesViewModel.swift
 //  Catogram
 //
-//  Created by Олег Крылов on 19/08/2019.
+//  Created by Олег Крылов on 26/08/2019.
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
+
 import UIKit
-struct UploadedViewModel {
-    let createdAt: String
+struct BreedImagesViewModel {
     let id: String
-    let subId: String
     let url: String
     var image: UIImage?
 }

@@ -11,10 +11,25 @@
 import UIKit
 
 final class SearchViewController: UIViewController, SearchViewProtocol {
-
-	private var presenter: SearchPresenterProtocol
+    private var presenter: SearchPresenterProtocol
+    private var breedsListTextField = PickerViewTextField()
+    private var categoryListTextField = PickerViewTextField()
+    private var searchCollectionView: UICollectionView
+    private let breedsPickerView = UIPickerView()
+    private let categoryPickerVIew = UIPickerView()
+    private var viewModels = [SearchViewModel]()
+    private var breedList = [Breed]()
+    private var categoryList = [Category]()
+    private let breedListActivityIndicator = UIActivityIndicatorView()
+    private let categoryListActivityIndicator = UIActivityIndicatorView()
+    private let toolBar = UIToolbar()
+    private var downloadTasks = [Int: ImageTask]()
+    private var breedId = ""
+    private var categoryId = 0
 
 	init(presenter: SearchPresenterProtocol) {
+        let collectionLayout = UICollectionViewFlowLayout()
+        self.searchCollectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -25,10 +40,247 @@ final class SearchViewController: UIViewController, SearchViewProtocol {
 
 	override func viewDidLoad() {
         super.viewDidLoad()
+        setupView()
+        setupCollectionView()
         presenter.view = self
         presenter.viewDidLoad()
     }
 
 }
-extension UploadViewController {
+extension SearchViewController {
+    func setBreedList(breeds: [Breed]) {
+        self.breedList = breeds
+        self.breedsListTextField.isHidden = false
+        self.stopBreedActivityIndicator()
+    }
+    
+    func setCategoryList(category: [Category]) {
+        self.categoryList = category
+        self.categoryListTextField.isHidden = false
+        self.stopCategoryActivityIndicator()
+    }
+    func set(images: [SearchViewModel]) {
+        self.viewModels = images
+        self.searchCollectionView.reloadData()
+    }
+    
+    func showAlert(for alert: String) {
+        let alertController = UIAlertController(title: nil, message: alert, preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true, completion: nil)
+    }
+}
+private extension SearchViewController {
+    func setupView() {
+        self.view.addSubview(breedsListTextField)
+        self.view.addSubview(categoryListTextField)
+        self.view.addSubview(searchCollectionView)
+        self.view.addSubview(breedListActivityIndicator)
+        self.view.addSubview(categoryListActivityIndicator)
+        
+        self.breedsPickerView.dataSource = self
+        self.breedsPickerView.delegate = self
+        self.breedsPickerView.tag = 1
+        
+        self.categoryPickerVIew.dataSource = self
+        self.categoryPickerVIew.delegate = self
+        self.categoryPickerVIew.tag = 2
+        
+        self.breedsListTextField.translatesAutoresizingMaskIntoConstraints = false
+        self.breedsListTextField.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 5).isActive = true
+        self.breedsListTextField.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 5).isActive = true
+        self.breedsListTextField.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
+        self.breedsListTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        self.breedsListTextField.layer.borderWidth = 2
+        self.breedsListTextField.layer.borderColor = UIColor.black.cgColor
+        self.breedsListTextField.layer.cornerRadius = 10
+        self.breedsListTextField.inputView = self.breedsPickerView
+        self.breedsListTextField.isHidden = true
+        self.breedsListTextField.placeholder = "Выберите породу"
+        self.breedsListTextField.textAlignment = .center
+        self.breedsListTextField.rightView = UIImageView(image: AppImages.arrow)
+        self.breedsListTextField.rightViewMode = UITextField.ViewMode.always
+        
+        self.categoryListTextField.translatesAutoresizingMaskIntoConstraints = false
+        self.categoryListTextField.topAnchor.constraint(equalTo: self.breedsListTextField.bottomAnchor, constant: 5).isActive = true
+        self.categoryListTextField.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 5).isActive = true
+        self.categoryListTextField.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -5).isActive = true
+        self.categoryListTextField.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        self.categoryListTextField.layer.borderWidth = 2
+        self.categoryListTextField.layer.borderColor = UIColor.black.cgColor
+        self.categoryListTextField.layer.cornerRadius = 10
+        self.categoryListTextField.inputView = self.categoryPickerVIew
+        self.categoryListTextField.isHidden = true
+        self.categoryListTextField.placeholder = "Выберите категорию"
+        self.categoryListTextField.textAlignment = .center
+        self.categoryListTextField.rightView = UIImageView(image: AppImages.arrow)
+        self.categoryListTextField.rightViewMode = UITextField.ViewMode.always
+        
+        self.toolBar.barStyle = UIBarStyle.default
+        self.toolBar.isTranslucent = true
+        self.toolBar.tintColor = UIColor.mainColor()
+        self.toolBar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector (donePicker))
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        self.toolBar.setItems([spaceButton, doneButton], animated: false)
+        self.toolBar.isUserInteractionEnabled = true
+        
+        self.breedsListTextField.inputAccessoryView = toolBar
+        self.categoryListTextField.inputAccessoryView = toolBar
+        
+        self.searchCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        self.searchCollectionView.topAnchor.constraint(equalTo: self.categoryListTextField.bottomAnchor, constant: 5).isActive = true
+        self.searchCollectionView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        self.searchCollectionView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        self.searchCollectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+        self.startBreedActivityIndicator()
+        self.startCategoryActivityIndicator()
+        self.breedListActivityIndicator.color = .gray
+        self.categoryListActivityIndicator.color = .gray
+        self.breedListActivityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        self.breedListActivityIndicator.centerXAnchor.constraint(equalTo: self.breedsListTextField.centerXAnchor).isActive = true
+        self.breedListActivityIndicator.centerYAnchor.constraint(equalTo: self.breedsListTextField.centerYAnchor).isActive = true
+        
+        self.categoryListActivityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        self.categoryListActivityIndicator.centerXAnchor.constraint(equalTo: self.categoryListTextField.centerXAnchor).isActive = true
+        self.categoryListActivityIndicator.centerYAnchor.constraint(equalTo: self.categoryListTextField.centerYAnchor).isActive = true
+    }
+    
+    func setupCollectionView() {
+        self.searchCollectionView.dataSource = self
+        self.searchCollectionView.delegate = self
+        self.searchCollectionView.register(SearchCollectionViewCell.self, forCellWithReuseIdentifier: "SearchCell")
+        self.searchCollectionView.contentInset = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+        self.searchCollectionView.backgroundColor = .white
+    }
+
+    func startBreedActivityIndicator() {
+        self.breedListActivityIndicator.startAnimating()
+    }
+    
+    func stopBreedActivityIndicator() {
+        self.breedListActivityIndicator.stopAnimating()
+    }
+    
+    func startCategoryActivityIndicator() {
+        self.categoryListActivityIndicator.startAnimating()
+    }
+    
+    func stopCategoryActivityIndicator() {
+        self.categoryListActivityIndicator.stopAnimating()
+    }
+    
+    @objc func donePicker() {
+        self.view.endEditing(true)
+    }
+    
+    
+    func setupDownloadTask(index: Int) {
+        let session = URLSession(configuration: URLSessionConfiguration.default)
+        guard let url = URL(string: self.viewModels[index].url) else { return }
+        if downloadTasks[index] == nil || downloadTasks[index]?.url != url || self.viewModels[index].image == nil {
+            let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
+            downloadTasks[index] = imageTask
+        }
+    }
+
+    func stopCurrentTasks() {
+        for task in 0...downloadTasks.count {
+            self.downloadTasks[task]?.pause()
+            self.downloadTasks.removeAll()
+        }
+    }
+}
+extension SearchViewController: UIPickerViewDelegate {
+    
+}
+
+extension SearchViewController: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+        
+    }
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        if pickerView.tag == 1 {
+            return breedList[row].name
+        } else  {
+            return categoryList[row].name
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if pickerView.tag == 1 {
+            return breedList.count
+            } else  {
+            return categoryList.count
+        }
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        self.stopCurrentTasks()
+        if pickerView.tag == 1 {
+            self.breedsListTextField.text = breedList[row].name ?? "Порода"
+            self.breedId = breedList[row].id ?? ""
+        } else  {
+            self.categoryListTextField.text = categoryList[row].name ?? "Категория"
+            self.categoryId = categoryList[row].id ?? 0
+        }
+        presenter.userSelectParams(breed: self.breedId, category: self.categoryId)
+    }
+}
+extension SearchViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModels.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SearchCell", for: indexPath) as! SearchCollectionViewCell
+        guard let image = viewModels[indexPath.row].image else {
+            cell.showLoading()
+            return cell
+        }
+        cell.hideLoading()
+        cell.set(image: image)
+        return cell
+    }
+    
+    
+}
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if viewModels[indexPath.row].image == nil {
+            setupDownloadTask(index: indexPath.row)
+            downloadTasks[indexPath.row]?.resume()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        downloadTasks[indexPath.row]?.pause()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let presenter = DetailedPresenter()
+        let detailedViewController = DetailedViewController(presenter: presenter, segueFrom: .search)
+        let detailedView = DetailedViewModel(id: String(viewModels[indexPath.row].id), url: viewModels[indexPath.row].url, subId: nil)
+        detailedViewController.set(viewModel: detailedView)
+        navigationController?.pushViewController(detailedViewController, animated: true)
+    }
+}
+
+extension SearchViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let ratio: CGFloat = 1.2
+        let width = collectionView.frame.width/3 - collectionView.contentInset.left - collectionView.contentInset.right
+        let height = width * ratio
+        return CGSize(width: width, height: height)
+    }
+}
+
+extension SearchViewController: ImageTaskDownloadedDelegate {
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.viewModels[position].image = image
+        self.searchCollectionView.reloadItems(at: [IndexPath(row: position, section: 0)])
+    }
 }

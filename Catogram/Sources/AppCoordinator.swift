@@ -6,11 +6,11 @@
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
 import UIKit
-protocol Coordinatble {
+protocol Coordinatable {
     
 }
 
-final class AppCoordinator: Coordinatble {
+final class AppCoordinator: Coordinatable {
     
     private let window: UIWindow
      lazy var tabBarController = UITabBarController()
@@ -34,7 +34,6 @@ private extension AppCoordinator {
     func setupLogin() {
         let presenter = LoginPresenter()
         let viewController = LoginViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         self.window.rootViewController = viewController
         self.window.makeKeyAndVisible()
     }
@@ -155,15 +154,15 @@ fileprivate enum NavControllerType: Int, CaseIterable {
     var image: UIImage? {
         switch self {
         case .feed:
-            return UIImage(named: "house")
+            return AppImages.feed
         case .breeds:
-            return UIImage(named: "book")
+            return AppImages.breeds
         case .search:
-            return UIImage(named: "search")
+            return AppImages.search
         case .favourites:
-            return UIImage(named: "star")
+            return AppImages.favourites
         case .upload:
-            return UIImage(named: "upload")
+            return AppImages.upload
         }
     }
 }

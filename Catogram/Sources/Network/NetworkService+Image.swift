@@ -74,7 +74,11 @@ extension NetworkService: ImageNetworkProtocol {
         self.baseRequest(url: self.urlFactory.gerBreedsList(), completion: completion)
     }
     
-    func searchForImage(name: String?, category: String?, completion: @escaping (Result<[ImageResponse], Error>) -> Void) {
+    func getCategoryList(completion: @escaping (Result<[Category], Error>) -> Void) {
+        self.baseRequest(url: self.urlFactory.gerCategoryList(), completion: completion)
+    }
+    
+    func searchForImage(name: String?, category: Int?, completion: @escaping (Result<[ImageResponse], Error>) -> Void) {
         self.baseRequest(url: self.urlFactory.searchForImage(name: name, category: category), completion: completion)
     }
     

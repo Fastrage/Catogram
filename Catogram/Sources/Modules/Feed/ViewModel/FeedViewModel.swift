@@ -6,7 +6,7 @@
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
 
-import Foundation
+import UIKit
 struct FeedViewModel {
     let id: String
     let url: String

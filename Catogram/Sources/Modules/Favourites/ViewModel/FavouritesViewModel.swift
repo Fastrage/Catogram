@@ -5,8 +5,7 @@
 //  Created by Олег Крылов on 12/08/2019.
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
-
-import Foundation
+import UIKit
 
 struct FavouritesViewModel {
     let createdAt: String
@@ -14,5 +13,6 @@ struct FavouritesViewModel {
     let imageId: String
     let subId: String
     let imageUrl: String
+    var image: UIImage?
 }
 

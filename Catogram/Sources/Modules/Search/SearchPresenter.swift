@@ -11,21 +11,84 @@
 import Foundation
 
 // MARK: View -
-protocol SearchViewProtocol: class {
-
+protocol SearchViewProtocol: AnyObject {
+    func setBreedList( breeds: [Breed])
+    func setCategoryList( category: [Category])
+    func set(images: [SearchViewModel])
+    func showAlert(for alert: String)
 }
 
 // MARK: Presenter -
-protocol SearchPresenterProtocol: class {
+protocol SearchPresenterProtocol: AnyObject {
 	var view: SearchViewProtocol? { get set }
+    
     func viewDidLoad()
+    func userSelectParams(breed: String, category: Int)
 }
 
 final class SearchPresenter: SearchPresenterProtocol {
+    
+    
 
     weak var view: SearchViewProtocol?
+    private var images: [ImageResponse] = []
+    private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
 
     func viewDidLoad() {
-
+        getBreedsList()
+        getCategoryList()
+    }
+    
+    func userSelectParams(breed: String, category: Int) {
+        DispatchQueue.global(qos: DispatchQoS.QoSClass.userInitiated).async{
+            self.imageNetworkProtocol.searchForImage(name: breed, category: category, completion: { result in
+                switch result {
+                case .success(let response):
+                    if response.isEmpty {
+                        print(response)
+                        self.view?.showAlert(for: "Не удалось получить фото по указанному запросу")
+                    } else {
+                        self.didLoad(response)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            })
+        }
+    }
+}
+private extension SearchPresenter {
+    func getBreedsList() {
+        self.imageNetworkProtocol.getBreedsList { result in
+            switch result {
+            case .success(let response):
+                self.view?.setBreedList(breeds: response)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func getCategoryList() {
+        self.imageNetworkProtocol.getCategoryList { result in
+            switch result {
+            case .success(let response):
+                self.view?.setCategoryList(category: response)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    func makeViewModels(_ images: [ImageResponse]) -> [SearchViewModel] {
+        return images.map { image in
+            SearchViewModel(id: image.id ?? "",
+                            url: image.url ?? "",
+                            image: nil)
+        }
+    }
+    func didLoad(_ images: [ImageResponse]) {
+        self.images = images
+        let viewModels: [SearchViewModel] = self.makeViewModels(self.images)
+        self.view?.set(images: viewModels)
     }
 }

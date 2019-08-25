@@ -10,7 +10,7 @@
 
 import UIKit
 
-final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatble {
+final class LoginViewController: UIViewController, LoginViewProtocol, Coordinatable {
     
     private var appCoordinator: AppCoordinator?
     private let presenter: LoginPresenterProtocol
@@ -53,10 +53,12 @@ extension LoginViewController {
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
+        self.view.backgroundColor = .white
+        
         self.wallpaper.frame.size = self.view.bounds.size
         self.wallpaper.frame.origin = CGPoint(x: 0, y: -100)
         self.wallpaper.contentMode = .scaleAspectFit
-        self.wallpaper.image = UIImage(named: "thecatapi_256xW", in: .main, compatibleWith: nil)
+        self.wallpaper.image = AppImages.wallpaper
         
         self.loginTextField.placeholder = "E-mail adress"
         self.loginTextField.text = login ?? ""

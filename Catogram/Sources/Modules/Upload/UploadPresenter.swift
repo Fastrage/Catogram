@@ -67,7 +67,8 @@ private extension UploadPresenter {
             UploadedViewModel(createdAt: image.createdAt ?? "",
                               id: image.id ?? "",
                               subId: image.subId ?? "",
-                              url: image.url ?? "")
+                              url: image.url ?? "",
+                              image: nil)
         }
     }
     

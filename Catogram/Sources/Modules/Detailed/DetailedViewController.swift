@@ -21,6 +21,7 @@ final class DetailedViewController: UIViewController, DetailedViewProtocol {
     private let segueFrom: SenderVC
     private var viewModel: DetailedViewModel? = nil
     private var downloadTasks = [Int: ImageTask]()
+    //private var images = [UIImage]()
     
     init(presenter: DetailedPresenterProtocol, segueFrom: SenderVC) {
         self.presenter = presenter
@@ -97,7 +98,7 @@ private extension DetailedViewController {
         self.optionalButton.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         self.optionalButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         self.optionalButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        self.optionalButton.setImage(UIImage(named: "trash", in: .main, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), for: .normal)
+        self.optionalButton.setImage(AppImages.trash?.withRenderingMode(.alwaysTemplate), for: .normal)
         self.optionalButton.backgroundColor = .clear
         self.optionalButton.tintColor = UIColor.mainColor()
         self.optionalButton.isHidden = true
@@ -181,8 +182,8 @@ private extension DetailedViewController {
 }
 
 extension DetailedViewController: ImageTaskDownloadedDelegate {
-    func imageDownloaded(position: Int) {
-        self.detailedImageView.image = downloadTasks[position]?.image
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.detailedImageView.image = image
         self.stopActivityIndicatror()
     }
     

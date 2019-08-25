@@ -6,7 +6,7 @@
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct Breed: Decodable {
     let id: String?

@@ -12,11 +12,6 @@ import UIKit
 
 final class FeedViewController: UIViewController, FeedViewProtocol {
     
-    
-    
-    
-    
-    
     private let presenter: FeedPresenterProtocol
     private let wallpaperImageView = UIImageView()
     private let stackView = UIStackView()
@@ -26,7 +21,6 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     private let activityIndicator = UIActivityIndicatorView()
     private var viewModel: FeedViewModel? = nil
     private var downloadTasks = [Int: ImageTask]()
-    
     
     init(presenter: FeedPresenterProtocol) {
         self.presenter = presenter
@@ -55,13 +49,11 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     override func viewDidLayoutSubviews() {
         setupFrames()
     }
-    
-    
 }
 
 extension FeedViewController {
     func set(viewModel: FeedViewModel) {
-        self.activityIndicator.startAnimating()
+        self.startActivityIndicator()
         self.downloadTasks.removeAll()
         self.viewModel = viewModel
         self.setupDownloadTask(index: 0)
@@ -84,6 +76,14 @@ private extension FeedViewController {
         for task in 0...downloadTasks.count {
             self.downloadTasks[task]?.pause()
         }
+    }
+    
+    func startActivityIndicator() {
+        self.activityIndicator.startAnimating()
+    }
+    
+    func stopActivityIndicator() {
+        self.activityIndicator.stopAnimating()
     }
     
     func setupFeedView() {
@@ -112,31 +112,25 @@ private extension FeedViewController {
         self.voteUpButton.addTarget(self, action: #selector(voteUpForCurrentImage)
             , for: .touchDown)
         self.voteUpButton.backgroundColor = .white
-        self.voteUpButton.setImage(UIImage.init(named: "like",
-                                                in: .main,
-                                                compatibleWith: nil), for: .normal)
+        self.voteUpButton.setImage(AppImages.like, for: .normal)
         self.voteUpButton.imageView?.contentMode = .scaleAspectFit
         
         
         self.voteDownButton.addTarget(self, action: #selector(voteDownForCurrentImage), for: .touchDown)
         self.voteDownButton.backgroundColor = .white
-        self.voteDownButton.setImage(UIImage.init(named: "dislike",
-                                                  in: .main,
-                                                  compatibleWith: nil), for: .normal)
+        self.voteDownButton.setImage(AppImages.dislike, for: .normal)
         self.voteDownButton.imageView?.contentMode = .scaleAspectFit
         
         
         self.favItButton.addTarget(self, action: #selector(favCurrentImage), for: .touchDown)
         self.favItButton.backgroundColor = .white
-        self.favItButton.setImage(UIImage.init(named: "star",
-                                               in: .main,
-                                               compatibleWith: nil), for: .normal)
+        self.favItButton.setImage(AppImages.star, for: .normal)
         self.favItButton.imageView?.contentMode = .scaleAspectFit
     }
     
     func setupFrames() {
         self.wallpaperImageView.frame.size = self.view.bounds.size
-        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom
+        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom-self.stackView.bounds.height
         
         self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX,
                                                       y: self.wallpaperImageView.bounds.midY)
@@ -188,8 +182,8 @@ private extension FeedViewController {
 }
 
 extension FeedViewController: ImageTaskDownloadedDelegate {
-    func imageDownloaded(position: Int) {
-        self.wallpaperImageView.image = downloadTasks[position]?.image
-        self.activityIndicator.stopAnimating()
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.wallpaperImageView.image = image
+        self.stopActivityIndicator()
     }
 }

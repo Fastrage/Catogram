@@ -17,14 +17,14 @@ final class BreedsViewController: UIViewController, BreedsViewProtocol {
     
     private let breedsTextField = PickerViewTextField()
     private let verticalScrollView = UIScrollView()
-    private let descriptionLabel = UILabel()
-    private let urlShortcutTextField = UITextView()
+    private let descriptionTextView = UITextView()
+    private let urlShortcutTextView = UITextView()
     private let breedListActivityIndicator = UIActivityIndicatorView()
     private let pickerView = UIPickerView()
     private let toolBar = UIToolbar()
     private let breedsPhotosCollectionView: UICollectionView
     private var breedsList: [Breed] = []
-    private var catImages: [ImageResponse] = []
+    private var catImages: [BreedImagesViewModel] = []
     
     init(presenter: BreedsPresenterProtocol) {
         self.presenter = presenter
@@ -65,10 +65,10 @@ extension BreedsViewController {
     func setBreedList(breeds: [Breed]) {
         self.breedsList = breeds
         self.breedsTextField.isHidden = false
-        self.breedListActivityIndicator.stopAnimating()
+        self.stopActivityIndicator()
     }
     
-    func set(images: [ImageResponse]) {
+    func set(images: [BreedImagesViewModel]) {
         self.catImages = images
         self.breedsPhotosCollectionView.reloadData()
     }
@@ -85,9 +85,8 @@ private extension BreedsViewController {
     
     func setupDownloadTask(index: Int) {
         let session = URLSession(configuration: URLSessionConfiguration.default)
-        if downloadTasks[index] == nil {
-            guard let urlString = self.catImages[index].url else { return }
-            guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: self.catImages[index].url) else { return }
+        if downloadTasks[index] == nil || downloadTasks[index]?.url != url || self.catImages[index].image == nil {
             let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
             downloadTasks[index] = imageTask
         }
@@ -100,6 +99,14 @@ private extension BreedsViewController {
         }
     }
     
+    func startActivityIndicator() {
+        self.breedListActivityIndicator.startAnimating()
+    }
+    
+    func stopActivityIndicator() {
+        self.breedListActivityIndicator.stopAnimating()
+    }
+        
     func setupCollectionView() {
         self.breedsPhotosCollectionView.dataSource = self
         self.breedsPhotosCollectionView.delegate = self
@@ -113,8 +120,8 @@ private extension BreedsViewController {
         self.view.addSubview(breedListActivityIndicator)
         self.view.addSubview(verticalScrollView)
         self.verticalScrollView.addSubview(breedsPhotosCollectionView)
-        self.verticalScrollView.addSubview(descriptionLabel)
-        self.verticalScrollView.addSubview(urlShortcutTextField)
+        self.verticalScrollView.addSubview(descriptionTextView)
+        self.verticalScrollView.addSubview(urlShortcutTextView)
         
         self.pickerView.delegate = self
         self.pickerView.dataSource = self
@@ -126,33 +133,19 @@ private extension BreedsViewController {
         self.breedsTextField.isEnabled = true
         self.breedsTextField.layer.cornerRadius = 10
         self.breedsTextField.layer.borderWidth = 2
-        self.breedsTextField.rightView = UIImageView(image: UIImage(named: "arrow", in: .main, compatibleWith: nil))
+        self.breedsTextField.rightView = UIImageView(image: AppImages.arrow)
         self.breedsTextField.rightViewMode = UITextField.ViewMode.always
         self.breedsTextField.isHidden = true
         
-        self.breedListActivityIndicator.startAnimating()
+        self.startActivityIndicator()
         self.breedListActivityIndicator.color = .gray
         
         self.verticalScrollView.backgroundColor = .white
         
-        self.descriptionLabel.backgroundColor = .white
-        self.descriptionLabel.textAlignment = .center
-        self.descriptionLabel.isEnabled = false
-        self.descriptionLabel.numberOfLines = 0
-        self.descriptionLabel.textColor = .black
-        
-        self.urlShortcutTextField.isEditable = false
-        self.urlShortcutTextField.isUserInteractionEnabled = true
-        self.urlShortcutTextField.textAlignment = .center
-        self.urlShortcutTextField.translatesAutoresizingMaskIntoConstraints = false
-        self.urlShortcutTextField.topAnchor.constraint(equalTo: self.descriptionLabel.bottomAnchor, constant: 0).isActive = true
-        self.urlShortcutTextField.bottomAnchor.constraint(equalTo: self.verticalScrollView.bottomAnchor, constant: 0).isActive = true
-        self.urlShortcutTextField.leftAnchor.constraint(equalTo: self.verticalScrollView.leftAnchor, constant: 5).isActive = true
-        self.urlShortcutTextField.rightAnchor.constraint(equalTo: self.verticalScrollView.rightAnchor, constant: 5).isActive = true
-        self.urlShortcutTextField.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        self.urlShortcutTextField.widthAnchor.constraint(equalTo: self.verticalScrollView.widthAnchor, constant: -10).isActive = true
-        self.urlShortcutTextField.centerXAnchor.constraint(equalTo: self.verticalScrollView.centerXAnchor).isActive = true
-        
+        self.descriptionTextView.backgroundColor = .white
+        self.descriptionTextView.isUserInteractionEnabled = true
+        self.descriptionTextView.isEditable = false
+        self.descriptionTextView.isScrollEnabled = false
         
         self.toolBar.barStyle = UIBarStyle.default
         self.toolBar.isTranslucent = true
@@ -168,20 +161,20 @@ private extension BreedsViewController {
     
     func setupFrames() {
         self.breedsTextField.frame = CGRect(x: 5,
-                                            y: 0,
+                                            y: 5,
                                             width: self.view.bounds.width - 10,
                                             height: 40)
         self.breedListActivityIndicator.frame.origin = CGPoint(x: self.breedsTextField.bounds.midX,
                                                                y: self.breedsTextField.bounds.midY)
         self.verticalScrollView.frame = CGRect(x: 0,
-                                               y: self.breedsTextField.bounds.maxY,
+                                               y: self.breedsTextField.frame.maxY,
                                                width: self.view.bounds.width ,
                                                height: (self.view.bounds.height - self.breedsTextField.bounds.height))
         self.breedsPhotosCollectionView.frame = CGRect(x: 5,
                                                        y: self.verticalScrollView.bounds.minY,
                                                        width: self.verticalScrollView.bounds.width - 10,
                                                        height: self.verticalScrollView.bounds.width * 1.2)
-        self.descriptionLabel.frame = CGRect(x: 5,
+        self.descriptionTextView.frame = CGRect(x: 5,
                                              y: self.breedsPhotosCollectionView.bounds.maxY,
                                              width: self.verticalScrollView.bounds.width - 10 ,
                                              height: 300)
@@ -200,17 +193,10 @@ private extension BreedsViewController {
         attributedText.append(NSMutableAttributedString(string: "Страна произхождения: \(breedsList[row].origin ?? "") \n\n", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
         attributedText.append(NSMutableAttributedString(string: "Продолжительность жизни: \(breedsList[row].life_span ?? "") лет \n", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
         attributedText.append(NSMutableAttributedString(string: "Средний вес: \(breedsList[row].weight.metric ?? "") кг. \n", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.gray]))
-        
-        self.descriptionLabel.attributedText = attributedText
-        self.descriptionLabel.sizeToFit()
-    }
-    
-    func setupUrlButton(row: Int) {
-        guard let urlString = breedsList[row].wikipedia_url else { return }
-        guard let url = URL(string: urlString) else  { return }
-        let urlShortcutText = NSMutableAttributedString(string: "wikipedia", attributes: [NSAttributedString.Key.link: url])
-        self.urlShortcutTextField.attributedText = urlShortcutText
-        self.urlShortcutTextField.sizeToFit()
+        attributedText.append(NSMutableAttributedString(string: "wikipedia", attributes: [NSAttributedString.Key.link: "\(breedsList[row].wikipedia_url ?? "")"]))
+        self.descriptionTextView.attributedText = attributedText
+        self.descriptionTextView.textAlignment = .center
+        self.descriptionTextView.sizeToFit()
     }
 }
 
@@ -231,21 +217,20 @@ extension BreedsViewController: UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        self.view.endEditing(true)
         self.stopCurrentTasks()
         self.breedsTextField.text = breedsList[row].name ?? "Порода"
         self.setupDescriptionLabel(row: row)
-        self.setupUrlButton(row: row)
         presenter.userSelectBreed(breed: breedsList[row].id ?? "")
-        self.verticalScrollView.contentSize.height = self.breedsPhotosCollectionView.bounds.height + self.descriptionLabel.bounds.height + self.urlShortcutTextField.bounds.height
-        
+        self.verticalScrollView.contentSize.height = self.breedsPhotosCollectionView.bounds.height + self.descriptionTextView.bounds.height + self.urlShortcutTextView.bounds.height
     }
 }
 
 extension BreedsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        self.setupDownloadTask(index: indexPath.row)
-        downloadTasks[indexPath.row]?.resume()
+        if catImages[indexPath.row].image == nil {
+            setupDownloadTask(index: indexPath.row)
+            downloadTasks[indexPath.row]?.resume()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -255,9 +240,7 @@ extension BreedsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let presenter = DetailedPresenter()
         let detailedViewController = DetailedViewController(presenter: presenter, segueFrom: .breeds)
-        guard let id = catImages[indexPath.row].id else { return }
-        guard let url = catImages[indexPath.row].url else { return }
-        let detailedView = DetailedViewModel(id: id, url: url, subId: nil)
+        let detailedView = DetailedViewModel(id: String(catImages[indexPath.row].id), url: catImages[indexPath.row].url, subId: nil)
         detailedViewController.set(viewModel: detailedView)
         navigationController?.pushViewController(detailedViewController, animated: true)
     }
@@ -270,7 +253,7 @@ extension BreedsViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BreedCell", for: indexPath) as! BreedCollectionViewCell
-        guard let image = downloadTasks[indexPath.row]?.image else {
+        guard let image = catImages[indexPath.row].image else {
             cell.showLoading()
             return cell
         }
@@ -289,7 +272,8 @@ extension BreedsViewController: UICollectionViewDelegateFlowLayout {
 }
 
 extension BreedsViewController: ImageTaskDownloadedDelegate {
-    func imageDownloaded(position: Int) {
+    func imageDownloaded(position: Int, image: UIImage) {
+        self.catImages[position].image = image
         self.breedsPhotosCollectionView.reloadItems(at: [IndexPath(row: position, section: 0)])
     }
 }

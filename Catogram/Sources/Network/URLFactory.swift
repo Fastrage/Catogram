@@ -101,9 +101,28 @@ final class URLFactory {
         return request
     }
     
-    func searchForImage(name: String?, category: String?) -> URLRequest {
+    func gerCategoryList() -> URLRequest {
+        let methodUrl = "/categories"
+        guard let url = URL(string: baseUrl+methodUrl) else { fatalError("Bad URL") }
+        var request = URLRequest(url: url)
+        let headers = [
+            "x-api-key": xApiKey
+        ]
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        return request
+    }
+    
+    func searchForImage(name: String?, category: Int?) -> URLRequest {
+        let queryItem: String
+        if category == nil || category == 0 {
+             queryItem = "?limit=90&breed_id=\(name ?? "")"
+        } else if name == nil || name == "" {
+             queryItem = "?limit=90&category_ids=\(category!)"
+        } else {
+             queryItem = "?limit=90&breed_id=\(name ?? "")&category_ids=\(category!)"
+        }
         let methodUrl = "/images/search"
-        let queryItem = "?limit=9&breed_id=\(name ?? "")"
         guard let url = URL(string: baseUrl+methodUrl+queryItem) else { fatalError("Bad URL") }
         var request = URLRequest(url: url)
         let headers = [
@@ -111,6 +130,7 @@ final class URLFactory {
         ]
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = headers
+        print(request)
         return request
     }
     

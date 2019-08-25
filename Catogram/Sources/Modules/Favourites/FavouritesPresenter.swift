@@ -52,7 +52,8 @@ private extension FavouritesPresenter {
                                 id: image.id ?? 0,
                                 imageId: image.imageId ?? "",
                                 subId: image.subId ?? "",
-                                imageUrl: image.image.url ?? "")
+                                imageUrl: image.image.url ?? "",
+                                image: nil)
         }
     }
     func didLoad(_ images: [FavouritesResponse]) {

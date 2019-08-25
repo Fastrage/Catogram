@@ -32,13 +32,10 @@ final class FeedPresenter: FeedPresenterProtocol {
     private var randomImage: ImageResponse? = nil
     private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
     
-    
-    
     func viewDidLoad() {
         getRandomImage()
     }
 }
-
 
 extension FeedPresenter {
     func getRandomImage() {
