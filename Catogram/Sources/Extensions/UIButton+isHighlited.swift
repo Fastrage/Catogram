@@ -7,7 +7,7 @@
 //
 
 import UIKit
-extension UIButton {
+class CustomButton: UIButton {
     override open var isHighlighted: Bool {
         didSet {
             backgroundColor = isHighlighted ? .lightGray : .clear

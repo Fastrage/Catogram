@@ -9,10 +9,8 @@ import UIKit
 
 final class SearchCollectionViewCell: UICollectionViewCell {
     
-    
     private let activityIndicator = UIActivityIndicatorView()
     private let favouritesImageView = UIImageView()
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -31,6 +29,7 @@ final class SearchCollectionViewCell: UICollectionViewCell {
         self.favouritesImageView.image = nil
     }
 }
+
 extension SearchCollectionViewCell {
     func set(image: UIImage?) {
         favouritesImageView.image = image

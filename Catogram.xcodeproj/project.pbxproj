@@ -347,10 +347,10 @@
 		0CBBAA64230168F500AAC4E2 /* Favourites */ = {
 			isa = PBXGroup;
 			children = (
+				0CC556CC2301B01F00A2B8B6 /* ViewModel */,
+				0CC556C72301AF2800A2B8B6 /* VIews */,
 				0CBBAA652301693100AAC4E2 /* FavouritesPresenter.swift */,
 				0CBBAA662301693200AAC4E2 /* FavouritesViewController.swift */,
-				0CC556C72301AF2800A2B8B6 /* VIews */,
-				0CC556CC2301B01F00A2B8B6 /* ViewModel */,
 			);
 			path = Favourites;
 			sourceTree = "<group>";

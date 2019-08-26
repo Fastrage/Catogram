@@ -28,8 +28,6 @@ protocol SearchPresenterProtocol: AnyObject {
 
 final class SearchPresenter: SearchPresenterProtocol {
     
-    
-
     weak var view: SearchViewProtocol?
     private var images: [ImageResponse] = []
     private let imageNetworkProtocol = NetworkService(urlFactory: URLFactory())
@@ -57,6 +55,7 @@ final class SearchPresenter: SearchPresenterProtocol {
         }
     }
 }
+
 private extension SearchPresenter {
     func getBreedsList() {
         self.imageNetworkProtocol.getBreedsList { result in

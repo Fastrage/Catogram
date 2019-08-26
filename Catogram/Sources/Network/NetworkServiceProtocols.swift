@@ -5,7 +5,6 @@
 //  Created by Олег Крылов on 09/08/2019.
 //  Copyright © 2019 OlegKrylov. All rights reserved.
 //
-
 import Foundation
 
 protocol ImageNetworkProtocol {
@@ -20,7 +19,6 @@ protocol ImageNetworkProtocol {
     func uploadImage(image: Data, completion: @escaping (Result<requestCompletionResponse, Error>) -> Void)
     func deleteFromFavourites(id: String, completion: @escaping (Result<requestCompletionResponse, Error>) -> Void)
     func deleteFromUploaded(id: String, completion: @escaping (Result<requestCompletionResponse?, Error>) -> Void)
-    
 }
 
 struct ImageResponse: Decodable {

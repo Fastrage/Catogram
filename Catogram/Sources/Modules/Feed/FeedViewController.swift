@@ -15,9 +15,9 @@ final class FeedViewController: UIViewController, FeedViewProtocol {
     private let presenter: FeedPresenterProtocol
     private let wallpaperImageView = UIImageView()
     private let stackView = UIStackView()
-    private let voteUpButton = UIButton()
-    private let voteDownButton = UIButton()
-    private let favItButton = UIButton()
+    private let voteUpButton = CustomButton()
+    private let voteDownButton = CustomButton()
+    private let favItButton = CustomButton()
     private let activityIndicator = UIActivityIndicatorView()
     private var viewModel: FeedViewModel? = nil
     private var downloadTasks = [Int: ImageTask]()
@@ -96,10 +96,13 @@ private extension FeedViewController {
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapHandler(sender:)))
         
+        self.view.backgroundColor = .white
+        
         self.wallpaperImageView.addGestureRecognizer(tapGestureRecognizer)
         self.wallpaperImageView.isUserInteractionEnabled = true
-        
-        self.wallpaperImageView.contentMode = .scaleAspectFit
+        self.wallpaperImageView.layer.cornerRadius = 10
+        self.wallpaperImageView.contentMode = .scaleAspectFill
+        self.wallpaperImageView.clipsToBounds = true
         
         
         self.activityIndicator.hidesWhenStopped = true
@@ -130,10 +133,6 @@ private extension FeedViewController {
     
     func setupFrames() {
         self.wallpaperImageView.frame.size = self.view.bounds.size
-        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.view.safeAreaInsets.bottom-self.stackView.bounds.height
-        
-        self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX,
-                                                      y: self.wallpaperImageView.bounds.midY)
         
         self.stackView.frame = CGRect(x: 0,
                                       y: self.view.bounds.maxY-60-self.view.safeAreaInsets.bottom,
@@ -154,6 +153,11 @@ private extension FeedViewController {
                                         y: self.stackView.bounds.origin.y,
                                         width: self.stackView.bounds.size.width/3,
                                         height: 60)
+        
+        self.wallpaperImageView.frame.size.height = self.view.bounds.size.height-self.stackView.bounds.height-83
+        
+        self.activityIndicator.frame.origin = CGPoint(x: self.wallpaperImageView.bounds.midX,
+                                                      y: self.wallpaperImageView.bounds.midY)
     }
     
     @objc func voteUpForCurrentImage() {

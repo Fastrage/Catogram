@@ -37,8 +37,7 @@ final class CoreDataStack {
     }
     
     func read(url: String) {
-        do
-        {
+        do {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let managedContext = appDelegate.persistentContainer.viewContext
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "FavouritesPhotoCache")
@@ -66,11 +65,9 @@ final class CoreDataStack {
         let context:NSManagedObjectContext = appDel.persistentContainer.viewContext
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "FavouritesPhotoCache")
         fetchRequest.returnsObjectsAsFaults = false
-        do
-        {
+        do {
             let results = try context.fetch(fetchRequest)
-            for managedObject in results
-            {
+            for managedObject in results {
                 let managedObjectData:NSManagedObject = managedObject as! NSManagedObject
                 context.delete(managedObjectData)
             }
@@ -79,3 +76,4 @@ final class CoreDataStack {
         }
     }
 }
+

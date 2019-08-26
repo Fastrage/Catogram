@@ -62,8 +62,9 @@ struct PasswordValidator: ValidatorConvertible {
     func validated(_ value: String) throws -> String {
         guard let userLogin = login  else {throw ValidationError("E-mail is Required")}
         let passwordForLogin = UserDefaults.standard.stringArray(forKey: userLogin)
-        
-        guard value == passwordForLogin?[1] else {throw ValidationError("Password is incorrect")}
+        if passwordForLogin?[1] != nil {
+            guard value == passwordForLogin![1] else {throw ValidationError("Password is incorrect")}
+        }
         guard value != "" else {throw ValidationError("Password is Required")}
         guard value.count >= 6 else {throw ValidationError("Password must have at least 6 characters") }  
         do {

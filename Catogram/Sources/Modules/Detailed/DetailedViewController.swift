@@ -17,7 +17,7 @@ final class DetailedViewController: UIViewController, DetailedViewProtocol {
     private var presenter: DetailedPresenterProtocol
     private let activityIndicator = UIActivityIndicatorView()
     private let detailedImageView = UIImageView()
-    private let optionalButton = UIButton()
+    private let optionalButton = CustomButton()
     private let segueFrom: SenderVC
     private var viewModel: DetailedViewModel? = nil
     private var downloadTasks = [Int: ImageTask]()

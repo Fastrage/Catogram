@@ -83,6 +83,7 @@ private extension UploadViewController {
     }
     
     func setupUploadCollectionView() {
+        self.view.backgroundColor = .white
         self.uploadCollectionView.dataSource = self
         self.uploadCollectionView.delegate = self
         self.uploadCollectionView.register(UploadCollectionViewCell.self, forCellWithReuseIdentifier: "UploadCell")

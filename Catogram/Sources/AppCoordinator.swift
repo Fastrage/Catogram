@@ -58,7 +58,6 @@ private extension AppCoordinator {
         }
         let presenter = FeedPresenter()
         let viewController = FeedViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.feed.title
     }
@@ -69,7 +68,6 @@ private extension AppCoordinator {
         }
         let presenter = BreedsPresenter()
         let viewController = BreedsViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.breeds.title
     }
@@ -80,7 +78,6 @@ private extension AppCoordinator {
         }
         let presenter = SearchPresenter()
         let viewController = SearchViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.search.title
     }
@@ -91,7 +88,6 @@ private extension AppCoordinator {
         }
         let presenter = FavouritesPresenter()
         let viewController = FavouritesViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.favourites.title
     }
@@ -102,7 +98,6 @@ private extension AppCoordinator {
         }
         let presenter = UploadPresenter()
         let viewController = UploadViewController(presenter: presenter)
-        viewController.view.backgroundColor = .white
         navController.setViewControllers([viewController], animated: false)
         viewController.navigationItem.title = NavControllerType.upload.title
     }
@@ -112,8 +107,6 @@ private extension AppCoordinator {
         UINavigationBar.appearance().tintColor = UIColor.mainColor()
         UINavigationBar.appearance().titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         UINavigationBar.appearance().isTranslucent = false
-        //UINavigationBar.appearance().shadowImage = UIImage()
-        
         UITabBar.appearance().barTintColor = .white
         UITabBar.appearance().tintColor = UIColor.mainColor()
     }

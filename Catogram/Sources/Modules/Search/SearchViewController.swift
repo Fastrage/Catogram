@@ -45,7 +45,11 @@ final class SearchViewController: UIViewController, SearchViewProtocol {
         presenter.view = self
         presenter.viewDidLoad()
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.tabBarController?.tabBar.isHidden = false
+    }
 }
 extension SearchViewController {
     func setBreedList(breeds: [Breed]) {
@@ -78,6 +82,8 @@ private extension SearchViewController {
         self.view.addSubview(searchCollectionView)
         self.view.addSubview(breedListActivityIndicator)
         self.view.addSubview(categoryListActivityIndicator)
+        
+        self.view.backgroundColor = .white
         
         self.breedsPickerView.dataSource = self
         self.breedsPickerView.delegate = self
@@ -116,6 +122,8 @@ private extension SearchViewController {
         self.categoryListTextField.textAlignment = .center
         self.categoryListTextField.rightView = UIImageView(image: AppImages.arrow)
         self.categoryListTextField.rightViewMode = UITextField.ViewMode.always
+        self.categoryListTextField.rightView?.tintColor = UIColor.mainColor()
+        
         
         self.toolBar.barStyle = UIBarStyle.default
         self.toolBar.isTranslucent = true
@@ -175,7 +183,6 @@ private extension SearchViewController {
     @objc func donePicker() {
         self.view.endEditing(true)
     }
-    
     
     func setupDownloadTask(index: Int) {
         let session = URLSession(configuration: URLSessionConfiguration.default)
@@ -245,9 +252,8 @@ extension SearchViewController: UICollectionViewDataSource {
         cell.set(image: image)
         return cell
     }
-    
-    
 }
+
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if viewModels[indexPath.row].image == nil {
