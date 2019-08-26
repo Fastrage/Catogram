@@ -21,7 +21,6 @@ final class DetailedViewController: UIViewController, DetailedViewProtocol {
     private let segueFrom: SenderVC
     private var viewModel: DetailedViewModel? = nil
     private var downloadTasks = [Int: ImageTask]()
-    //private var images = [UIImage]()
     
     init(presenter: DetailedPresenterProtocol, segueFrom: SenderVC) {
         self.presenter = presenter

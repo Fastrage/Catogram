@@ -16,7 +16,6 @@ final class UploadViewController: UIViewController, UploadViewProtocol {
     private let uploadCollectionView: UICollectionView
     private var viewModels = [UploadedViewModel]()
     private var downloadTasks = [Int: ImageTask]()
-    private var images = [UIImage?]()
     
     init(presenter: UploadPresenterProtocol) {
         let collectionViewLayout = UICollectionViewFlowLayout()
@@ -71,7 +70,7 @@ private extension UploadViewController {
     func setupDownloadTask(index: Int) {
         let session = URLSession(configuration: URLSessionConfiguration.default)
         guard let url = URL(string: self.viewModels[index].url) else { return }
-        if downloadTasks[index] == nil || downloadTasks[index]?.url != url {
+        if downloadTasks[index] == nil || downloadTasks[index]?.url != url || self.viewModels[index].image == nil {
             let imageTask = ImageTask(position: index, url: url, session: session, delegate: self)
             downloadTasks[index] = imageTask
         }

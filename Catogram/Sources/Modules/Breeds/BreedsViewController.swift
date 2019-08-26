@@ -163,7 +163,7 @@ private extension BreedsViewController {
         self.breedsTextField.frame = CGRect(x: 5,
                                             y: 5,
                                             width: self.view.bounds.width - 10,
-                                            height: 40)
+                                            height: 30)
         self.breedListActivityIndicator.frame.origin = CGPoint(x: self.breedsTextField.bounds.midX,
                                                                y: self.breedsTextField.bounds.midY)
         self.verticalScrollView.frame = CGRect(x: 0,
