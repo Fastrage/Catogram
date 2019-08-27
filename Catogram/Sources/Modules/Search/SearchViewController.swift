@@ -192,12 +192,12 @@ private extension SearchViewController {
             downloadTasks[index] = imageTask
         }
     }
-
+    
     func stopCurrentTasks() {
-        for task in 0...downloadTasks.count {
-            self.downloadTasks[task]?.pause()
-            self.downloadTasks.removeAll()
+        for task in downloadTasks {
+            task.value.pause()
         }
+            self.downloadTasks.removeAll()
     }
 }
 extension SearchViewController: UIPickerViewDelegate {

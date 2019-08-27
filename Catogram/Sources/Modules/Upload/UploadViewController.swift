@@ -77,9 +77,10 @@ private extension UploadViewController {
     }
     
     func stopCurrentTasks() {
-        for task in 0...downloadTasks.count {
-            self.downloadTasks[task]?.pause()
+        for task in downloadTasks {
+            task.value.pause()
         }
+        self.downloadTasks.removeAll()
     }
     
     func setupUploadCollectionView() {
